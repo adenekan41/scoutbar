@@ -1,0 +1,181 @@
+.scoutbarStemInner {
+  transition: all 0.2s ease-in-out;
+}
+
+.scoutbarStem {
+  --default-focus: #898989;
+  --deduct-height: 230px;
+
+  border-top: 1px solid var(--scout-light-grey);
+  padding: 10px;
+  transition: all 0.2s ease-in-out;
+  min-height: 20px;
+  max-height: calc(100vh - var(--deduct-height));
+  overflow: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--scout-light-grey) transparent;
+  &:hover {
+    &::-webkit-scrollbar {
+      width: 9px;
+    }
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--scout-theme-grey);
+    border-radius: 50px;
+
+    &:hover {
+      background: var(--scout-tutorial-grey);
+    }
+  }
+
+  /* Works on Chrome, Edge, and Safari */
+  &::-webkit-scrollbar {
+    width: 0px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scoutbarStemCell {
+    padding: 15px;
+    width: 100%;
+    border-radius: 8px;
+    text-align: left;
+    background: transparent;
+    border: none;
+    font-size: 0.95rem;
+    margin-bottom: 3px;
+    font-weight: 400;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease-in-out;
+    will-change: border-color;
+    align-items: center;
+    display: flex;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    color: var(--scout-theme-black);
+    position: relative;
+    animation: slideInLeft 0.2s ease-in-out;
+
+    svg,
+    img {
+      width: 35px;
+      height: 35px;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      margin-right: auto;
+    }
+
+    p {
+      margin-bottom: 0px;
+      display: block;
+      flex: 0 0 92.5%;
+      max-width: 92.5%;
+
+      span {
+        display: block;
+        font-size: 0.813rem;
+        opacity: 0.45;
+        margin-top: 6px;
+      }
+      .shortcut,
+      .newPageIcon {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        width: 20px;
+        transform: translateY(-50%);
+        visibility: hidden;
+        opacity: 0.7;
+        transition: all 0.2s ease-in-out;
+      }
+      .shortcut {
+        height: 20px;
+        align-items: center;
+        margin: 0;
+        justify-content: center;
+        display: flex;
+        line-height: 0;
+        font-weight: bold;
+        font-family: monospace;
+        visibility: hidden;
+        box-shadow: var(--scout-theme-keyboard);
+        border-radius: 4px;
+        background: var(--scout-tutorial-grey);
+        color: var(--scout-white);
+      }
+
+      .newPageIcon {
+        height: auto;
+
+        path {
+          fill: var(--scout-tutorial-grey);
+        }
+      }
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      color: var(--scout-theme-black);
+      cursor: not-allowed;
+    }
+
+    &:hover,
+    &:focus,
+    &.active {
+      background: var(--scout-theme-card-hover);
+
+      p span.shortcut,
+      .newPageIcon {
+        visibility: visible;
+      }
+    }
+
+    &:focus {
+      outline: none;
+      border: 1px solid var(--scout-brand-primary, var(--default-focus));
+    }
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-10px);
+  }
+  to {
+    transform: translateX(0px);
+  }
+}
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}
+
+.scoutbarSection {
+  p.header {
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    margin: 15px 0px 8px 2px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.688rem;
+    color: var(--scout-theme-black);
+    letter-spacing: 0.8px;
+    opacity: 0.4;
+    width: fit-content;
+    border-radius: 8px;
+    padding: 0px 8px;
+    animation: slideInLeft 0.2s ease-in-out;
+  }
+}

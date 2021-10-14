@@ -1,0 +1,195 @@
+@import './normalize.scss';
+@import 'responsive';
+
+:root {
+  --scout-z-index-base: 9999;
+
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Segoe UI Emoji',
+    'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Cantarell',
+    'Helvetica Neue', sans-serif !important;
+}
+
+@mixin light-mode {
+  --scout-white: #fff;
+  --scout-theme-black: #021a03;
+  --scout-theme-green: #61bb65;
+  --scout-light-grey: #ebebeb;
+  --scout-theme-grey: #bdbcbc;
+  --scout-theme-card-hover: #ededed;
+  --scout-theme-keyboard: 0px 2px 0px 2px #8d8d8d;
+  --scout-tutorial-grey: #494949;
+
+  --scout-box-shadow: 1px 2px 16px 10px rgba(0, 0, 0, 0.05);
+}
+
+@mixin dark-mode {
+  --scout-white: #0f121e;
+  --scout-theme-black: #dbdbdb;
+  --scout-theme-green: #61bb65;
+  --scout-light-grey: #32333e;
+  --scout-theme-grey: #656a7c;
+  --scout-tutorial-grey: #9fa0a5;
+  --scout-theme-card-hover: #1c1e2d;
+  --scout-theme-keyboard: 0px 2px 0px 2px #6a6b6c;
+  --scout-box-shadow: 1px 2px 16px 10px rgb(16 18 30 / 33%);
+}
+
+.scout__bar-wrapper-theme-light {
+  @include light-mode;
+}
+
+.scout__bar-wrapper-theme-dark {
+  @include dark-mode;
+}
+
+.scout__bar-wrapper-theme-auto {
+  @media (prefers-color-scheme: dark) {
+    @include dark-mode;
+  }
+
+  @media (prefers-color-scheme: light) {
+    @include light-mode;
+  }
+}
+
+.scout__bar {
+  font-family: --font-family;
+
+  &-container {
+    left: 50%;
+    position: fixed;
+    top: 15%;
+    width: 650px;
+    z-index: var(--scout-z-index-base);
+    transform: translate(-50%, 0%);
+  }
+
+  &-wrapper {
+    background: var(--scout-white);
+    box-shadow: var(--scout-box-shadow);
+    border: 1px solid var(--scout-light-grey);
+    box-sizing: border-box;
+    border-radius: 8px;
+    padding: 1px;
+    width: 100%;
+    transition: all 0.3s ease;
+    animation: bounceIn 0.3s ease;
+    overflow: hidden;
+
+    &-centered {
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    &-no-animation {
+      animation: none !important;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes bounceIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.3) translate3d(0, 0, 0);
+    }
+    50% {
+      opacity: 0.9;
+      transform: scale(1.05);
+    }
+
+    100% {
+      opacity: 1;
+      transform: scale(1) translate3d(0, 0, 0);
+    }
+  }
+
+  &-tutorial-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 10px 20px;
+    border-top: 1px solid var(--scout-light-grey);
+
+    @include respond-below(md) {
+      display: none;
+    }
+    span {
+      &.scout__bar-tutorial-section-item__arrow.m-left {
+        margin-left: 5px;
+      }
+
+      &:not(.scout__bar-tutorial-section-item__arrow) {
+        svg {
+          width: 11px;
+          margin-right: 3px;
+          height: auto;
+        }
+      }
+
+      svg {
+        path {
+          fill: var(--scout-white);
+        }
+      }
+    }
+    p span {
+      background: var(--scout-tutorial-grey);
+      font-size: 0.625rem;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: var(--scout-white);
+      width: auto;
+      margin-right: 7px;
+      display: inline-block;
+    }
+    p {
+      margin: 0;
+      font-size: 0.813rem;
+      letter-spacing: -0.4px;
+      display: flex;
+      color: var(--scout-theme-black);
+      align-items: center;
+    }
+  }
+}
+
+a.scout__bar-brand-logo {
+  display: block;
+  opacity: 0.8;
+  position: absolute;
+  right: 17px;
+  top: 7px;
+  line-height: 0;
+  margin: 0;
+  padding: 0;
+  font-weight: 500;
+
+  svg {
+    height: auto;
+    width: 55px;
+  }
+}
+
+.scoutbar___hide {
+  .scout__bar-wrapper {
+    transition: all 0.3s ease;
+    animation: fadeOut 0.3s ease;
+    @keyframes fadeOut {
+      0% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+      }
+    }
+  }
+}
