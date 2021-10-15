@@ -1,20 +1,28 @@
+@import '../../styles/responsive';
+
 .scoutbarStemInner {
   transition: all 0.2s ease-in-out;
 }
 
 .scoutbarStem {
   --default-focus: #898989;
-  --deduct-height: 230px;
+  --deduct-height: 600px;
 
   border-top: 1px solid var(--scout-light-grey);
   padding: 10px;
   transition: all 0.2s ease-in-out;
   min-height: 20px;
-  max-height: calc(100vh - var(--deduct-height));
-  overflow: auto;
+  max-height: var(--deduct-height);
+  overflow: overlay;
 
   scrollbar-width: thin;
   scrollbar-color: var(--scout-light-grey) transparent;
+
+  @include respond-below(sm) {
+    max-height: calc(100% - 96px);
+    min-height: 86vh;
+  }
+
   &:hover {
     &::-webkit-scrollbar {
       width: 9px;
@@ -37,6 +45,105 @@
 
   &::-webkit-scrollbar-track {
     background: transparent;
+  }
+
+  .recentSearch {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+
+    .recentCell {
+      border-radius: 8px;
+      margin-right: 8px;
+      min-width: 25%;
+      padding: 0px 10px;
+      animation: slideInLeft 0.2s ease-in-out;
+      position: relative;
+      margin-bottom: 4px;
+
+      @include respond-below(sm) {
+        min-width: 100%;
+      }
+
+      &:hover,
+      &:focus-within {
+        background: var(--scout-theme-card-hover);
+        .recentCloseIcon {
+          visibility: visible;
+          path {
+            fill: var(--scout-brand-primary);
+          }
+        }
+      }
+
+      &:focus-within {
+        border: 1px solid var(--scout-brand-primary);
+      }
+
+      .clock,
+      .more {
+        margin-right: 8px;
+        width: 20px;
+        height: auto;
+        opacity: 0.7;
+      }
+
+      .clock {
+        path {
+          stroke: var(--scout-theme-black);
+          fill: none;
+        }
+      }
+
+      .more {
+        path {
+          fill: var(--scout-theme-black);
+        }
+      }
+
+      .recentButton {
+        background: transparent;
+        border: none;
+        padding: 14px 14px 14px 0px;
+        text-align: left;
+        font-size: 14px;
+        outline: none;
+        cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 152px;
+
+        color: var(--scout-theme-black);
+        @include respond-below(sm) {
+          width: 270px;
+        }
+      }
+
+      .recentCloseIcon {
+        position: absolute;
+        right: 11px;
+        visibility: hidden;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: var(--scout-theme-card-hover);
+
+        @include respond-below(sm) {
+          visibility: visible;
+        }
+
+        svg {
+          width: 17px;
+          height: auto;
+          path {
+            fill: var(--scout-theme-grey);
+          }
+        }
+      }
+    }
   }
 
   .scoutbarStemCell {
@@ -69,6 +176,10 @@
       object-position: center;
       display: block;
       margin-right: auto;
+
+      @include respond-below(sm) {
+        margin-right: 8px;
+      }
     }
 
     p {
@@ -88,30 +199,36 @@
         position: absolute;
         top: 50%;
         right: 15px;
-        width: 20px;
         transform: translateY(-50%);
         visibility: hidden;
         opacity: 0.7;
+
         transition: all 0.2s ease-in-out;
       }
+
       .shortcut {
-        height: 20px;
-        align-items: center;
-        margin: 0;
-        justify-content: center;
         display: flex;
-        line-height: 0;
-        font-weight: bold;
-        font-family: monospace;
-        visibility: hidden;
-        box-shadow: var(--scout-theme-keyboard);
-        border-radius: 4px;
-        background: var(--scout-tutorial-grey);
-        color: var(--scout-white);
+        span {
+          height: 20px;
+          width: 20px;
+          opacity: 1;
+          align-items: center;
+          margin: 0 7px 0 0;
+          justify-content: center;
+          display: flex;
+          line-height: 0;
+          font-weight: bold;
+          font-family: monospace;
+          box-shadow: var(--scout-theme-keyboard);
+          border-radius: 4px;
+          background: var(--scout-tutorial-grey);
+          color: var(--scout-white);
+        }
       }
 
       .newPageIcon {
         height: auto;
+        width: 20px;
 
         path {
           fill: var(--scout-tutorial-grey);
@@ -130,7 +247,7 @@
     &.active {
       background: var(--scout-theme-card-hover);
 
-      p span.shortcut,
+      p .shortcut,
       .newPageIcon {
         visibility: visible;
       }

@@ -1,8 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react';
+/* -------------------------------------------------------------------------- */
+/*                            External Dependencies                           */
+/* -------------------------------------------------------------------------- */
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+import Fuse from 'fuse.js';
+
+/* -------------------------- Internal Dependencies ------------------------- */
 import { useScoutShortcut } from '..';
 import Icon from '../components/icon';
-import { createPortal } from 'react-dom';
-
 import useOnClickOutside from '../helpers/use-click-outside';
 import { classNames, isBrowser } from '../utils';
 import ScoutBarInput from '../components/input';
@@ -64,14 +69,30 @@ export interface ScoutBarProps {
    * Center the scoutbar
    */
   centered?: boolean;
+  /**
+   * Set the scoutbar width
+   */
+  barWidth?: string;
+  /**
+   * Allow scoutbar to show recent searches
+   */
+  showRecentSearch?: boolean;
+  /**
+   * Disable Scoutbar stem before search
+   */
+  noResultsOnEmptySearch?: boolean;
+  /**
+   * Keep data in input even after scoutbar is closed
+   */
+  persistInput?: boolean;
 }
 
 export const defaultProps: Partial<ScoutBarProps> = {
-  tutorial: false,
+  tutorial: true,
   noAnimation: false,
   theme: 'light',
   aknowledgement: true,
-  brandColor: '#4c70d6',
+  brandColor: '#61bb65',
   placeholder: [
     'What would you like to do today ?',
     'What do you need?',
@@ -80,6 +101,10 @@ export const defaultProps: Partial<ScoutBarProps> = {
   bodyScroll: true,
   disableFocusTrap: false,
   centered: false,
+  barWidth: '650px',
+  showRecentSearch: true,
+  noResultsOnEmptySearch: false,
+  persistInput: false,
 };
 
 const ScoutBar: React.FC<ScoutBarProps> = ({
@@ -93,9 +118,14 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   disableFocusTrap,
   centered,
   actions,
+  barWidth,
+  showRecentSearch,
+  noResultsOnEmptySearch,
+  persistInput,
 }) => {
   const [open, setOpen] = useState(false);
   const [section, setSection] = useState<ISectionAction | null>(null);
+  const [inputValue, setInputValue] = useState('');
   const [activeRoute, setActiveRoute] = useState<string>(
     (isBrowser() && window.location.pathname) || ''
   );
@@ -113,7 +143,8 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   }, []);
 
   useScoutShortcut(['meta', 'k'], () => {
-    setOpen(!open);
+    if (open) handleClickOutside();
+    else setOpen(true);
   });
 
   useScoutShortcut(['escape'], () => {
@@ -122,6 +153,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
 
   const handleClickOutside = () => {
     (ref as any).current?.classList.add('scoutbar___hide');
+    if (!persistInput) setInputValue('');
     setTimeout(() => setOpen(false), noAnimation ? 0 : 300);
   };
 
@@ -136,6 +168,37 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
     disableFocusTrap,
   });
 
+  const searchItem = useCallback(
+    value => {
+      const fuse = new Fuse(actions as any, {
+        shouldSort: true,
+        threshold: 0.3,
+        location: 0,
+        distance: 100,
+        keys: [
+          'label',
+          'description',
+          'children.label',
+          'children.description',
+        ],
+      });
+
+      const result = fuse.search(inputValue || value);
+
+      const finalResult: Array<IAction | ISectionAction> = [];
+
+      if (result.length) {
+        result.forEach((item: any) => {
+          finalResult.unshift(item.item);
+        });
+        setSection?.(finalResult as any);
+      } else {
+        setSection?.(null);
+      }
+    },
+    [inputValue, setSection]
+  );
+
   return isMounted() && socutbar___root.current
     ? createPortal(
         <>
@@ -144,6 +207,11 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
               value={{
                 actions,
                 currentRoute: activeRoute,
+                inputValue,
+                setInputValue: (value: string) => {
+                  setInputValue(value);
+                  searchItem(value);
+                },
                 currentSection: section,
                 setCurrentRoute: (route: string) => setActiveRoute(route),
                 setCurrentSection: (section: ISectionAction | null) =>
@@ -158,12 +226,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
                   ])}
                   ref={ref}
                   style={{
-                    /* @ts-ignore */
-                    top:
-                      centered &&
-                      `calc(50% - ${
-                        (ref as any).current?.clientHeight || 50
-                      }px)`,
+                    ['--scoutbar-width' as any]: barWidth,
                   }}
                 >
                   <div
@@ -176,9 +239,26 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
                     <ScoutBarInput
                       placeholder={placeholder}
                       brandColor={brandColor}
+                      closeScoutbar={() => handleClickOutside()}
+                      showRecentSearch={showRecentSearch}
                     />
-                    <ScoutBarStem actions={actions} brandColor={brandColor} />
-                    {tutorial && <ScoutTutorial />}
+
+                    <ScoutBarStem
+                      actions={
+                        noResultsOnEmptySearch && inputValue.trim() === ''
+                          ? []
+                          : actions
+                      }
+                      brandColor={brandColor}
+                      showRecentSearch={showRecentSearch}
+                    />
+
+                    {tutorial && (
+                      <ScoutTutorial
+                        brandColor={brandColor}
+                        aknowledgement={aknowledgement}
+                      />
+                    )}
                     {aknowledgement && <ScoutBarLogo brandColor={brandColor} />}
                   </div>
                 </div>
@@ -191,8 +271,18 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
     : null;
 };
 
-const ScoutTutorial: React.FC<{}> = () => (
+const ScoutTutorial: React.FC<Partial<ScoutBarProps>> = ({
+  brandColor,
+  aknowledgement,
+}) => (
   <div className="scout__bar-tutorial-section">
+    {aknowledgement && (
+      <div className="scout__bar-mobile-aknowledge">
+        <p>
+          Powered by <ScoutBarLogo brandColor={brandColor} />
+        </p>
+      </div>
+    )}
     <div className="scout__bar-tutorial-section-item">
       <p>
         <span>

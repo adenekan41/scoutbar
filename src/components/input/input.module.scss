@@ -1,3 +1,5 @@
+@import '../../styles/responsive';
+
 .inputWrapper {
   display: flex;
   align-items: center;
@@ -8,6 +10,21 @@
     border: none;
     background: transparent;
     margin: 0 5px 0 20px;
+  }
+
+  .closeScoutBar {
+    display: none;
+    margin: 0px 10px 0px 0px;
+    border: none;
+    background: transparent;
+    padding: 6px 6px;
+    border-radius: 50%;
+    svg {
+      width: 23px;
+    }
+    @include respond-below(sm) {
+      display: block;
+    }
   }
 
   svg {

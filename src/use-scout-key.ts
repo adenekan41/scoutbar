@@ -41,7 +41,6 @@ const useScoutKey = (targetKey: string, override: boolean = false): boolean => {
       if (ignoreStrokes((target as HTMLElement).tagName) && !override) return;
 
       if (key === targetKey) {
-        console.log(key);
         setKeyPressed(false);
       }
     },

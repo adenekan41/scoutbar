@@ -3,17 +3,22 @@ import { ScoutBarProps, defaultProps } from '../../scoutbar';
 import { classNames, isEmpty } from '../../utils';
 import Icon from '../icon';
 import ScoutBarContext from '../../helpers/context';
-import Fuse from 'fuse.js';
 
 /* @ts-ignore */
 import styles from './input.module.scss';
 import { useScoutKey } from '../..';
-import { IAction, ISectionAction } from '../../helpers/action-helpers';
 import useLocalStorage from '../../helpers/use-local-storage';
 
-interface IScoutBar extends Partial<ScoutBarProps> {}
+interface IScoutBar extends Partial<ScoutBarProps> {
+  closeScoutbar: () => void;
+}
 
-const ScoutbarInput: React.FC<IScoutBar> = ({ brandColor, placeholder }) => {
+const ScoutbarInput: React.FC<IScoutBar> = ({
+  brandColor,
+  placeholder,
+  showRecentSearch,
+  closeScoutbar,
+}) => {
   // Initialize the placeholder
   const initialPlaceholder =
     placeholder && Array.isArray(placeholder)
@@ -23,11 +28,10 @@ const ScoutbarInput: React.FC<IScoutBar> = ({ brandColor, placeholder }) => {
    * Check if esc key is pressed
    */
   const isEscPressed = useScoutKey('Backspace', true);
-  const { actions, currentSection, setCurrentSection } =
+  const { inputValue, setInputValue, currentSection, setCurrentSection } =
     useContext(ScoutBarContext);
 
-  const [inputValue, setInputValue] = useState('');
-  const [_, setRecentSearch] = useLocalStorage<string[] | undefined>(
+  const [_, setRecentSearch] = useLocalStorage<string[]>(
     'scoutbar:recent-search',
     []
   );
@@ -60,28 +64,6 @@ const ScoutbarInput: React.FC<IScoutBar> = ({ brandColor, placeholder }) => {
       setCurrentSection?.(null);
     }
   }, [inputValue, isEscPressed, setCurrentSection]);
-
-  const searchItem = useCallback(() => {
-    const fuse = new Fuse(actions as any, {
-      shouldSort: true,
-      ignoreLocation: true,
-      includeMatches: true,
-      keys: ['label', 'description', 'children.label', 'children.description'],
-    });
-
-    const result = fuse.search(inputValue);
-
-    const finalResult: Array<IAction | ISectionAction> = [];
-
-    if (result.length) {
-      result.forEach((item: any) => {
-        finalResult.push(item.item);
-      });
-      setCurrentSection?.(finalResult as any);
-    } else {
-      setCurrentSection?.(null);
-    }
-  }, [setCurrentSection]);
 
   return (
     <div
@@ -123,18 +105,21 @@ const ScoutbarInput: React.FC<IScoutBar> = ({ brandColor, placeholder }) => {
           placeholder={
             isEmpty(currentSection)
               ? initialPlaceholder
-              : 'Click Backspace or Delete to exit section'
+              : 'Hit Backspace or Delete key to exit'
           }
           type="text"
           id="scoutbar"
           value={inputValue}
           onChange={e => {
-            setInputValue(e.target.value);
-            searchItem();
+            setInputValue?.(e.target.value);
           }}
           onBlur={e => {
-            if (e.target.value.trim()) {
-              setRecentSearch(prev => [...prev, e.target.value]);
+            if (e.target.value.trim() && showRecentSearch) {
+              (setRecentSearch as Function)?.((prev: string[]) => {
+                const newRecentSearch = [...prev, e.target.value];
+
+                return Array.from(new Set(newRecentSearch));
+              });
             }
           }}
         />
@@ -149,6 +134,18 @@ const ScoutbarInput: React.FC<IScoutBar> = ({ brandColor, placeholder }) => {
             : initialPlaceholder}
         </label>
       </div>
+      <button
+        type="button"
+        onClick={closeScoutbar}
+        className={styles.closeScoutBar}
+      >
+        <Icon width="24" height="24" viewBox="0 0 24 24">
+          <path
+            d="M6.22517 4.81099C6.03657 4.62883 5.78397 4.52803 5.52177 4.53031C5.25957 4.53259 5.00876 4.63776 4.82335 4.82317C4.63794 5.00858 4.53278 5.25939 4.5305 5.52158C4.52822 5.78378 4.62901 6.03638 4.81117 6.22499L10.5862 12L4.81017 17.775C4.71466 17.8672 4.63848 17.9776 4.58607 18.0996C4.53366 18.2216 4.50607 18.3528 4.50492 18.4856C4.50377 18.6184 4.52907 18.75 4.57935 18.8729C4.62963 18.9958 4.70388 19.1075 4.79778 19.2014C4.89167 19.2953 5.00332 19.3695 5.12622 19.4198C5.24911 19.4701 5.38079 19.4954 5.51357 19.4942C5.64635 19.4931 5.77757 19.4655 5.89958 19.4131C6.02158 19.3607 6.13192 19.2845 6.22417 19.189L12.0002 13.414L17.7752 19.189C17.9638 19.3711 18.2164 19.4719 18.4786 19.4697C18.7408 19.4674 18.9916 19.3622 19.177 19.1768C19.3624 18.9914 19.4676 18.7406 19.4698 18.4784C19.4721 18.2162 19.3713 17.9636 19.1892 17.775L13.4142 12L19.1892 6.22499C19.3713 6.03638 19.4721 5.78378 19.4698 5.52158C19.4676 5.25939 19.3624 5.00858 19.177 4.82317C18.9916 4.63776 18.7408 4.53259 18.4786 4.53031C18.2164 4.52803 17.9638 4.62883 17.7752 4.81099L12.0002 10.586L6.22517 4.80999V4.81099Z"
+            style={{ fill: brandColor }}
+          />
+        </Icon>
+      </button>
     </div>
   );
 };

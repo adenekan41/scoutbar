@@ -58,10 +58,19 @@
   &-container {
     left: 50%;
     position: fixed;
-    top: 15%;
-    width: 650px;
+    top: 12%;
+    height: auto;
+    margin: 30px 0;
+    width: var(--scoutbar-width, 650px);
     z-index: var(--scout-z-index-base);
     transform: translate(-50%, 0%);
+
+    @include respond-below(sm) {
+      width: 100% !important;
+      height: 100%;
+      top: 0 !important;
+      margin: 0 !important;
+    }
   }
 
   &-wrapper {
@@ -72,13 +81,19 @@
     border-radius: 8px;
     padding: 1px;
     width: 100%;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     animation: bounceIn 0.3s ease;
     overflow: hidden;
+
+    @include respond-below(sm) {
+      border-radius: 1px;
+      height: 100%;
+    }
 
     &-centered {
       left: 50%;
       transform: translate(-50%, -50%);
+      top: 48.5%;
     }
 
     &-no-animation {
@@ -118,9 +133,32 @@
     padding: 10px 20px;
     border-top: 1px solid var(--scout-light-grey);
 
-    @include respond-below(md) {
+    .scout__bar-mobile-aknowledge {
       display: none;
+
+      @include respond-below(sm) {
+        display: block;
+        margin-left: auto;
+        text-align: center;
+        a {
+          display: block !important;
+          margin-left: 8px;
+          display: block;
+
+          top: 0;
+          right: 0;
+          position: relative;
+        }
+      }
     }
+    .scout__bar-tutorial-section-item {
+      display: block;
+
+      @include respond-below(sm) {
+        display: none;
+      }
+    }
+
     span {
       &.scout__bar-tutorial-section-item__arrow.m-left {
         margin-left: 5px;
@@ -172,6 +210,10 @@ a.scout__bar-brand-logo {
   padding: 0;
   font-weight: 500;
 
+  @include respond-below(sm) {
+    display: none;
+  }
+
   svg {
     height: auto;
     width: 55px;
@@ -180,7 +222,7 @@ a.scout__bar-brand-logo {
 
 .scoutbar___hide {
   .scout__bar-wrapper {
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     animation: fadeOut 0.3s ease;
     @keyframes fadeOut {
       0% {
