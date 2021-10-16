@@ -30,7 +30,7 @@ const banner = `
    */
 `;
 
-const pluginsSetups = {
+const pluginsSetups = bundle => ({
   external: [
     ...Object.keys(pkg.dependencies || {}),
     ...Object.keys(pkg.devDependencies || {}),
@@ -44,7 +44,10 @@ const pluginsSetups = {
     pluginTypescript({
       ...defaultTsConfig.compilerOptions,
       ...{
-        declaration: false,
+        declaration: true,
+        emitDeclarationOnly: true,
+        outDir: `${bundle}`,
+        declarationDir: `${bundle}`,
       },
     }),
     babel({
@@ -61,7 +64,7 @@ const pluginsSetups = {
       browser: false,
     }),
   ],
-};
+});
 
 export default [
   {
@@ -91,8 +94,8 @@ export default [
         ...{
           declaration: true,
           emitDeclarationOnly: true,
-          outDir: `${bundles.browser}/types`,
-          declarationDir: `${bundles.browser}/types`,
+          outDir: `${bundles.browser}`,
+          declarationDir: `${bundles.browser}`,
           exclude: [...defaultTsConfig.exclude],
         },
       }),
@@ -124,7 +127,7 @@ export default [
         exports: 'named',
       },
     ],
-    ...pluginsSetups,
+    ...pluginsSetups(bundles.es),
   },
 
   // CommonJS
@@ -139,6 +142,6 @@ export default [
         exports: 'named',
       },
     ],
-    ...pluginsSetups,
+    ...pluginsSetups(bundles.cjs),
   },
 ];
