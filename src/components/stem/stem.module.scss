@@ -61,7 +61,9 @@
       padding: 0px 10px;
       animation: slideInLeft 0.2s ease-in-out;
       position: relative;
+      display: flex;
       margin-bottom: 4px;
+      box-sizing: border-box;
 
       @include respond-below(sm) {
         min-width: 100%;
@@ -148,7 +150,7 @@
 
   .scoutbarStemCell {
     padding: 15px;
-    width: 100%;
+    max-width: 100%;
     border-radius: 8px;
     text-align: left;
     background: transparent;
@@ -156,16 +158,19 @@
     font-size: 0.95rem;
     margin-bottom: 3px;
     font-weight: 400;
+    box-sizing: border-box;
     cursor: pointer;
     border: 1px solid transparent;
     transition: all 0.2s ease-in-out;
     will-change: border-color;
     align-items: center;
+    text-decoration: none;
     display: flex;
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
     color: var(--scout-theme-black);
     position: relative;
+    animation-iteration-count: 1;
     animation: slideInLeft 0.2s ease-in-out;
 
     svg,

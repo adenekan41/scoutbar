@@ -1,3 +1,5 @@
+@import '../../styles/responsive';
+
 :global(.scout__bar-wrapper-theme-dark) {
   --scout-default-background: #dadada;
   .button p span {
@@ -24,6 +26,11 @@
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.2s ease;
+  width: 350px;
+
+  @include respond-below(xs) {
+    width: 90%;
+  }
 
   @keyframes fadeIn {
     from {
