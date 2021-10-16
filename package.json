@@ -1,18 +1,17 @@
 {
   "name": "scoutbar",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "repository": "git://github.com/adenekan41/scoutbar.git",
-  "description": "Sort of like Spotlight for your App",
+  "description": "The Spotlight for your App",
   "author": "Adenekan Wonderful <hellocodewonders@gmail.com> (https://codewonders.dev)",
   "main": "dist/bundle-cjs/index.js",
   "module": "dist/bundle-es/index.js",
   "jsnext:main": "dist/bundle-es/index.js",
   "browser": "dist/scoutbar/index.js",
-  "types": "dist/scoutbar/types/index.d.ts",
   "scripts": {
     "flush": "rm -rf dist",
-    "build": "yarn flush && rollup -c && yarn ts-types && bundlesize ",
+    "build": "yarn flush && rollup -c && bundlesize",
     "lint": "eslint --fix 'src/**/*.ts'",
     "test": "jest",
     "dev": "yarn flush && rollup -c -w",
@@ -60,17 +59,26 @@
     "typescript": "^4.4.3",
     "typescript-plugin-css-modules": "^3.4.0"
   },
+
   "bundlesize": [
     {
       "path": "dist/bundle-cjs/**/*.js"
     },
     {
       "path": "dist/bundle-es/**/*.js"
+    },
+    {
+      "path": "dist/scout-bar/**/*.js"
+    },
+    {
+      "path": "dist/**/*.ts"
     }
   ],
+
   "files": [
     "dist/bundle-es",
-    "dist/bundle-cjs"
+    "dist/bundle-cjs",
+    "dist/scout-bar"
   ],
   "keywords": [
     "javascript",
