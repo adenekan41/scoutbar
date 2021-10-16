@@ -150,7 +150,7 @@
 
   .scoutbarStemCell {
     padding: 15px;
-    max-width: 100%;
+    width: 100%;
     border-radius: 8px;
     text-align: left;
     background: transparent;
@@ -170,7 +170,6 @@
     animation-fill-mode: both;
     color: var(--scout-theme-black);
     position: relative;
-    animation-iteration-count: 1;
     animation: slideInLeft 0.2s ease-in-out;
 
     svg,
