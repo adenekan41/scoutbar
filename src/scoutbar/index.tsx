@@ -1,7 +1,13 @@
 /* -------------------------------------------------------------------------- */
 /*                            External Dependencies                           */
 /* -------------------------------------------------------------------------- */
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
 import { createPortal } from 'react-dom';
 import Fuse from 'fuse.js';
 
@@ -215,9 +221,27 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
     disableFocusTrap,
   });
 
+  /**
+   * Revise action data type if its a function to a an array
+   * We want to give user the ability to Item creation fucntions as a parameter in the props
+   *
+   * e.g
+   * ...
+   * actions={({ createScoutAction,createScoutActionSection,createScoutActionSectionPage}) => [...]}
+   */
+  const revisedAction: IScoutStems = useMemo(() => {
+    return Array.isArray(actions)
+      ? actions
+      : actions?.({
+          createScoutAction,
+          createScoutActionSection,
+          createScoutActionSectionPage,
+        });
+  }, [actions]);
+
   const searchItem = useCallback(
     value => {
-      const fuse = new Fuse(actions as IScoutStems, {
+      const fuse = new Fuse(revisedAction as IScoutStems, {
         shouldSort: true,
         threshold: 0.3,
         location: 0,
@@ -245,22 +269,6 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
     },
     [inputValue, setSection]
   );
-
-  /**
-   * Revise action data type if its a function to a an array
-   * We want to give user the ability to Item creation fucntions as a parameter in the props
-   *
-   * e.g
-   * ...
-   * actions={({ createScoutAction,createScoutActionSection,createScoutActionSectionPage}) => [...]}
-   */
-  const revisedAction: IScoutStems = Array.isArray(actions)
-    ? actions
-    : actions?.({
-        createScoutAction,
-        createScoutActionSection,
-        createScoutActionSectionPage,
-      });
 
   return isMounted() && socutbar___root.current
     ? createPortal(
