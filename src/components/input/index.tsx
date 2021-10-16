@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ScoutBarProps, defaultProps } from '../../scoutbar';
 import { classNames, isEmpty } from '../../utils';
 import Icon from '../icon';
@@ -8,7 +8,6 @@ import ScoutBarContext from '../../helpers/context';
 import styles from './input.module.scss';
 import { useScoutKey } from '../..';
 import useLocalStorage from '../../helpers/use-local-storage';
-
 interface IScoutBar extends Partial<ScoutBarProps> {
   closeScoutbar: () => void;
 }
@@ -117,7 +116,6 @@ const ScoutbarInput: React.FC<IScoutBar> = ({
             if (e.target.value.trim() && showRecentSearch) {
               (setRecentSearch as Function)?.((prev: string[]) => {
                 const newRecentSearch = [...prev, e.target.value];
-
                 return Array.from(new Set(newRecentSearch));
               });
             }

@@ -1,13 +1,13 @@
 import { createContext } from 'react';
-import { ISectionAction, IAction } from './action-helpers';
+import { IScoutSectionAction, IScoutAction } from './action-helpers';
 
 interface IScoutContext {
   currentRoute?: string;
-  actions?: (ISectionAction | IAction)[];
+  actions?: (IScoutSectionAction | IScoutAction)[];
   inputValue?: string;
   setInputValue?: (value: string) => void;
-  currentSection?: ISectionAction | null;
-  setCurrentSection?: (section: ISectionAction | null) => void;
+  currentSection?: IScoutSectionAction | null;
+  setCurrentSection?: (section: IScoutSectionAction | null) => void;
   setCurrentRoute?: (route: string) => void;
 }
 

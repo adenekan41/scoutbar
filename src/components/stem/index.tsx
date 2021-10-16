@@ -14,17 +14,19 @@ import React, {
 /* -------------------------- Internal Dependencies ------------------------- */
 import { classNames, isEmpty } from '../../utils';
 import ScoutBarContext from '../../helpers/context';
-import { IAction, ISectionAction } from '../../helpers/action-helpers';
+import {
+  IScoutAction,
+  IScoutSectionAction,
+} from '../../helpers/action-helpers';
 import { ScoutBarProps } from '../../scoutbar';
 import { useScoutKey, useScoutShortcut } from '../..';
+import useLocalStorage from '../../helpers/use-local-storage';
+import { IScoutStems } from '../../helpers/types';
 import Icon from '../icon';
 
 /* --------------------------- Styles Dependencies -------------------------- */
 /* @ts-ignore */
 import styles from './stem.module.scss';
-import useLocalStorage from '../../helpers/use-local-storage';
-
-interface ScoutActions extends Array<IAction | ISectionAction> {}
 
 const ScoutBarStem = ({
   actions,
@@ -34,8 +36,9 @@ const ScoutBarStem = ({
   if (isEmpty(actions)) return null;
 
   const [items, setItems] = useState<
-    JSX.Element | JSX.Element[] | ScoutActions | undefined
+    JSX.Element | JSX.Element[] | IScoutStems | undefined
   >(<></>);
+
   const [cursor, setCursor] = useState<number>(0);
   const [hovered, setHovered] = useState<HTMLElement | undefined>(undefined);
   const [recentSearch, removeRecent] = useLocalStorage(
@@ -53,7 +56,7 @@ const ScoutBarStem = ({
 
   const ref = useRef(null);
 
-  let isMobile = window?.matchMedia(
+  const isMobile = window?.matchMedia(
     'only screen and (max-width: 768px)'
   )?.matches;
 
@@ -127,7 +130,7 @@ const ScoutBarStem = ({
   }, [hovered]);
 
   const createScoutbarStemItems = useCallback(
-    (item: ScoutActions | any) => {
+    (item: IScoutStems | any) => {
       if (
         item.type === 'scout-action' ||
         (item.type === 'scout-section-page' &&
@@ -151,7 +154,7 @@ const ScoutBarStem = ({
        * @returns {function(): object}
        */
 
-      const scoutbarItemChildren = item?.children?.map((child: ScoutActions) =>
+      const scoutbarItemChildren = item?.children?.map((child: IScoutStems) =>
         createScoutbarStemItems(child)
       );
 
@@ -170,8 +173,8 @@ const ScoutBarStem = ({
   );
 
   const setUpScoutbarStem = useCallback(() => {
-    const scoutbarItems = actions?.map((item: ScoutActions | unknown) =>
-      createScoutbarStemItems(item)
+    const scoutbarItems = (actions as IScoutStems)?.map(
+      (item: IScoutStems | unknown) => createScoutbarStemItems(item)
     );
 
     setItems(scoutbarItems);
@@ -196,10 +199,10 @@ const ScoutBarStem = ({
       <div className={styles.scoutbarStemInner}>
         {!isEmpty(currentSection) ? (
           <>
-            {(currentSection as unknown as ScoutActions)?.length > 0 ? (
+            {(currentSection as unknown as IScoutStems)?.length > 0 ? (
               <>
-                {(currentSection as unknown as ScoutActions)?.map(
-                  (section: ScoutActions | unknown) =>
+                {(currentSection as unknown as IScoutStems)?.map(
+                  (section: IScoutStems | unknown) =>
                     createScoutbarStemItems(section)
                 )}
               </>
@@ -225,7 +228,7 @@ const ScoutBarStem = ({
 };
 
 const ScoutbarStemCell: React.FC<{
-  item: IAction | ISectionAction;
+  item: IScoutAction | IScoutSectionAction;
   setHovered: Function;
   active: number;
   allActions: HTMLElement[];
@@ -328,7 +331,7 @@ const ScoutbarStemCell: React.FC<{
 });
 
 const ScoutbarStemItem: React.FC<{
-  item: ISectionAction;
+  item: IScoutSectionAction;
   scoutbarChildren: Element[] | undefined;
 }> = memo(({ item, scoutbarChildren }) => {
   return (

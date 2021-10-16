@@ -1,0 +1,99 @@
+:global(.scout__bar-wrapper-theme-dark) {
+  --scout-default-background: #dadada;
+  .button p span {
+    background: #0000003b;
+  }
+}
+
+:global(.scout__bar-wrapper-theme-light) {
+  --scout-default-background: #0a0d17;
+  .button p span {
+    background: #dfdfdf3b;
+  }
+}
+
+.scoutbarSnackBar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  border-radius: 8px;
+  background: var(--scout-snackbar-background, var(--scout-default-background));
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  &.bottom {
+    bottom: 25px;
+  }
+  &.top {
+    top: 25px;
+  }
+
+  .CloseIcon {
+    background: transparent;
+    border: none;
+    padding: 12px 10px 12px 0px;
+    svg {
+      path {
+        fill: var(--scout-white);
+      }
+    }
+  }
+
+  .button {
+    width: 100%;
+    padding: 12px 25px;
+    text-align: left;
+    background: transparent;
+
+    font-size: 0.95rem;
+    font-weight: 400;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease-in-out;
+    will-change: border-color;
+    color: var(--scout-snackbar-color, var(--scout-white));
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    p {
+      align-items: center;
+      display: flex;
+      margin: 0;
+      color: var(--scout-snackbar-color, var(--scout-white));
+
+      span {
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 30px;
+        border-radius: 5px;
+        margin: 0 8px;
+        font-size: 14px;
+
+        svg {
+          width: 20px;
+          height: auto;
+          path {
+            stroke: var(--scout-white);
+          }
+        }
+      }
+    }
+  }
+}

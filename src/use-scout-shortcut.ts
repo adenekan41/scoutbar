@@ -1,5 +1,10 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { ignoreStrokes, isBrowser } from './utils';
+/* -------------------------------------------------------------------------- */
+/*                            External Dependencies                           */
+/* -------------------------------------------------------------------------- */
+import { useState, useEffect, useCallback } from 'react';
+
+/* -------------------------- Internal Dependencies ------------------------- */
+import { ignoreStrokes } from './utils';
 
 /**
  * Returns true if the key is pressed

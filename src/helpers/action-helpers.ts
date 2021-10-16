@@ -1,6 +1,6 @@
 import { guidGenerator } from '../utils';
 
-export interface IAction {
+export interface IScoutAction {
   id: string;
   label: string;
   type: 'scout-action';
@@ -14,24 +14,24 @@ export interface IAction {
   ariaLabel?: string;
 }
 
-export interface ISectionAction
-  extends Omit<IAction, 'keyboardShortcut' | 'type'> {
+export interface IScoutSectionAction
+  extends Omit<IScoutAction, 'keyboardShortcut' | 'type'> {
   type: 'scout-section' | 'scout-section-page';
-  children: IAction[];
+  children: IScoutAction[];
 }
 
-export const createScoutAction = (args: IAction): IAction => {
+export const createScoutAction = (args: IScoutAction): IScoutAction => {
   return { ...args, id: guidGenerator(), type: 'scout-action' };
 };
 
 export const createScoutActionSection = (
-  args: ISectionAction
-): ISectionAction => {
+  args: IScoutSectionAction
+): IScoutSectionAction => {
   return { ...args, id: guidGenerator(), type: 'scout-section' };
 };
 
 export const createScoutActionSectionPage = (
-  args: ISectionAction
-): ISectionAction => {
+  args: IScoutSectionAction
+): IScoutSectionAction => {
   return { ...args, id: guidGenerator(), type: 'scout-section-page' };
 };

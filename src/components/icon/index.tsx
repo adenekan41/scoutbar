@@ -21,7 +21,7 @@ const Icon: React.FC<SvgIconConstituentValues> = ({
   children,
   width,
   height,
-  fill,
+  fill = 'none',
   viewBox,
   ...attrs
 }): JSX.Element => {

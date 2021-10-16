@@ -11,14 +11,27 @@ import Icon from '../components/icon';
 import useOnClickOutside from '../helpers/use-click-outside';
 import { classNames, isBrowser } from '../utils';
 import ScoutBarInput from '../components/input';
+import ScoutSnackBar from '../components/snackbar';
 import ScoutBarStem from '../components/stem';
 import useIsMounted from '../helpers/use-is-mounted';
 import useTrapFocus from '../helpers/use-trap-focus';
-import { IAction, ISectionAction } from '../helpers/action-helpers';
+import {
+  IScoutAction,
+  IScoutSectionAction,
+  createScoutActionSectionPage,
+  createScoutAction,
+  createScoutActionSection,
+} from '../helpers/action-helpers';
 import ScoutBarContext from '../helpers/context';
 
 import '../styles/index.scss';
+import { IScoutStems } from '../helpers/types';
 
+type CallbackFunction = (props: {
+  createScoutAction: (action: IScoutAction) => void;
+  createScoutActionSection: (action: IScoutSectionAction) => void;
+  createScoutActionSectionPage: (action: IScoutSectionAction) => void;
+}) => (IScoutAction | IScoutSectionAction)[];
 export interface ScoutBarProps {
   /**
    * Show the scout bar tutorial user interface.
@@ -60,31 +73,54 @@ export interface ScoutBarProps {
   /**
    * Set Scoutbar action
    */
-  actions: (IAction | ISectionAction)[];
+  actions: (IScoutAction | IScoutSectionAction)[] | CallbackFunction;
   /**
    * Allow users to tab out of the scoutbar
+   * @default false
    */
   disableFocusTrap?: boolean;
   /**
    * Center the scoutbar
+   * @default false
    */
   centered?: boolean;
   /**
    * Set the scoutbar width
+   * @default 650px
    */
   barWidth?: string;
   /**
    * Allow scoutbar to show recent searches
+   * @default true
    */
   showRecentSearch?: boolean;
   /**
    * Disable Scoutbar stem before search
+   * @default false
    */
   noResultsOnEmptySearch?: boolean;
   /**
    * Keep data in input even after scoutbar is closed
+   * @default false
    */
   persistInput?: boolean;
+  /**
+   * Disable click outside to close scoutbar
+   */
+  disableClickOutside?: boolean;
+  /**
+   * Disable the scoutbar snackbar
+   */
+  disableSnackbar?: boolean;
+  /**
+   * Set snackbar color and position
+   */
+  snackBar?: {
+    background?: string;
+    color?: string;
+    position?: 'top' | 'bottom';
+    style?: React.CSSProperties;
+  };
 }
 
 export const defaultProps: Partial<ScoutBarProps> = {
@@ -105,6 +141,11 @@ export const defaultProps: Partial<ScoutBarProps> = {
   showRecentSearch: true,
   noResultsOnEmptySearch: false,
   persistInput: false,
+  disableClickOutside: false,
+  disableSnackbar: false,
+  snackBar: {
+    position: 'bottom',
+  },
 };
 
 const ScoutBar: React.FC<ScoutBarProps> = ({
@@ -122,9 +163,12 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   showRecentSearch,
   noResultsOnEmptySearch,
   persistInput,
+  disableClickOutside,
+  disableSnackbar,
+  snackBar,
 }) => {
   const [open, setOpen] = useState(false);
-  const [section, setSection] = useState<ISectionAction | null>(null);
+  const [section, setSection] = useState<IScoutSectionAction | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [activeRoute, setActiveRoute] = useState<string>(
     (isBrowser() && window.location.pathname) || ''
@@ -140,7 +184,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   useEffect(() => {
     (socutbar___root.current as any).setAttribute('id', 'scoutbar___root');
     window.document.body.appendChild(socutbar___root.current as any);
-  }, []);
+  }, [socutbar___root.current]);
 
   useScoutShortcut(['meta', 'k'], () => {
     if (open) handleClickOutside();
@@ -157,7 +201,10 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
     setTimeout(() => setOpen(false), noAnimation ? 0 : 300);
   };
 
-  useOnClickOutside(ref, handleClickOutside);
+  useOnClickOutside(
+    disableClickOutside ? (null as any) : ref,
+    handleClickOutside
+  );
 
   useTrapFocus({
     elementState: open,
@@ -170,7 +217,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
 
   const searchItem = useCallback(
     value => {
-      const fuse = new Fuse(actions as any, {
+      const fuse = new Fuse(actions as IScoutStems, {
         shouldSort: true,
         threshold: 0.3,
         location: 0,
@@ -185,13 +232,13 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
 
       const result = fuse.search(inputValue || value);
 
-      const finalResult: Array<IAction | ISectionAction> = [];
+      const finalResult: IScoutStems = [];
 
       if (result.length) {
         result.forEach((item: any) => {
           finalResult.unshift(item.item);
         });
-        setSection?.(finalResult as any);
+        setSection?.(finalResult as unknown as IScoutSectionAction);
       } else {
         setSection?.(null);
       }
@@ -199,13 +246,39 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
     [inputValue, setSection]
   );
 
+  /**
+   * Revise action data type if its a function to a an array
+   * We want to give user the ability to Item creation fucntions as a parameter in the props
+   *
+   * e.g
+   * ...
+   * actions={({ createScoutAction,createScoutActionSection,createScoutActionSectionPage}) => [...]}
+   */
+  const revisedAction: IScoutStems = Array.isArray(actions)
+    ? actions
+    : actions?.({
+        createScoutAction,
+        createScoutActionSection,
+        createScoutActionSectionPage,
+      });
+
   return isMounted() && socutbar___root.current
     ? createPortal(
         <>
+          {!disableSnackbar
+            ? !open && (
+                <ScoutSnackBar
+                  setController={setOpen}
+                  brandColor={brandColor}
+                  theme={theme}
+                  snackBar={snackBar}
+                />
+              )
+            : null}
           {open && (
             <ScoutBarContext.Provider
               value={{
-                actions,
+                actions: revisedAction,
                 currentRoute: activeRoute,
                 inputValue,
                 setInputValue: (value: string) => {
@@ -214,7 +287,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
                 },
                 currentSection: section,
                 setCurrentRoute: (route: string) => setActiveRoute(route),
-                setCurrentSection: (section: ISectionAction | null) =>
+                setCurrentSection: (section: IScoutSectionAction | null) =>
                   setSection(section),
               }}
             >
@@ -247,7 +320,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
                       actions={
                         noResultsOnEmptySearch && inputValue.trim() === ''
                           ? []
-                          : actions
+                          : revisedAction
                       }
                       brandColor={brandColor}
                       showRecentSearch={showRecentSearch}
@@ -271,7 +344,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
     : null;
 };
 
-const ScoutTutorial: React.FC<Partial<ScoutBarProps>> = ({
+export const ScoutTutorial: React.FC<Partial<ScoutBarProps>> = ({
   brandColor,
   aknowledgement,
 }) => (
@@ -339,7 +412,7 @@ const ScoutTutorial: React.FC<Partial<ScoutBarProps>> = ({
   </div>
 );
 
-const ScoutBarLogo: React.FC<{ brandColor: string | undefined }> = ({
+export const ScoutBarLogo: React.FC<{ brandColor: string | undefined }> = ({
   brandColor,
 }) => (
   <a
