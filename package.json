@@ -18,9 +18,9 @@
     "prepublishOnly": "npm run build",
     "ts-types": " tsc --emitDeclarationOnly",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
-    "buildmajor": "npm version major && git push origin master && npm publish",
-    "buildminor": "npm version minor && git push origin master && npm publish",
-    "buildpatch": "npm version patch && git push origin master && npm publish"
+    "build:major": "npm version major && git push origin master && npm publish",
+    "build:minor": "npm version minor && git push origin master && npm publish",
+    "build:patch": "npm version patch && git push origin master && npm publish"
   },
   "homepage": "https://github.com/adenekan41/scoutbar#readme",
   "devDependencies": {
