@@ -53,7 +53,7 @@
 }
 
 .___scout {
-  font-family: --font-family;
+  font-family: var(--font-family);
 }
 
 .scout__bar {
@@ -98,8 +98,15 @@
       top: 48.5%;
     }
 
+    @media (prefers-reduced-motion) {
+      animation: none !important;
+    }
+
     &-no-animation {
       animation: none !important;
+      :global(*) {
+        animation: none !important;
+      }
     }
   }
 

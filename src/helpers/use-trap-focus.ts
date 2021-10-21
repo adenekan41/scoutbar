@@ -1,16 +1,21 @@
+/* -------------------------------------------------------------------------- */
+/*                            External Dependencies                           */
+/* -------------------------------------------------------------------------- */
 import { useEffect } from 'react';
+
+interface ITrapFocus {
+  elementState: boolean;
+  bodyScroll?: boolean;
+  focusAbleElement?: string;
+  disableFocusTrap?: boolean;
+}
 
 const useTrapFocus = ({
   elementState,
   bodyScroll = true,
   focusAbleElement,
   disableFocusTrap = false,
-}: {
-  elementState: boolean;
-  bodyScroll?: boolean;
-  focusAbleElement?: string;
-  disableFocusTrap?: boolean;
-}): any => {
+}: ITrapFocus): void => {
   useEffect(() => {
     const OUTER_SCOUTBAR_EL = focusAbleElement;
     /**

@@ -1,13 +1,21 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { ScoutBarProps, defaultProps } from '../../scoutbar';
-import { classNames, isEmpty } from '../../utils';
-import Icon from '../icon';
-import ScoutBarContext from '../../helpers/context';
+/* -------------------------------------------------------------------------- */
+/*                            External Dependencies                           */
+/* -------------------------------------------------------------------------- */
+import React, { Fragment, useContext, useEffect, useState } from 'react';
+
+/* -------------------------- Internal Dependencies ------------------------- */
+import { useScoutKey, ScoutBarProps, defaultProps } from 'index';
+import Icon from 'components/icon';
+
+/* ---------------------------------- Utils --------------------------------- */
+import { classNames, isEmpty } from 'utils';
+
+/* --------------------------------- Helpers -------------------------------- */
+import ScoutBarContext from 'helpers/context';
+import useLocalStorage from 'helpers/use-local-storage';
 
 /* @ts-ignore */
 import styles from './input.module.scss';
-import { useScoutKey } from '../..';
-import useLocalStorage from '../../helpers/use-local-storage';
 interface IScoutBar extends Partial<ScoutBarProps> {
   closeScoutbar: () => void;
 }
@@ -27,28 +35,29 @@ const ScoutbarInput: React.FC<IScoutBar> = ({
    * Check if esc key is pressed
    */
   const isEscPressed = useScoutKey('Backspace', true);
+
   const { inputValue, setInputValue, currentSection, setCurrentSection } =
     useContext(ScoutBarContext);
 
-  const [_, setRecentSearch] = useLocalStorage<string[]>(
+  const setRecentSearch = useLocalStorage<string[]>(
     'scoutbar:recent-search',
     []
-  );
+  )[1];
 
   const [inputPlaceholder, setInputPlaceholder] = useState({
-    id: Math.floor(Math.random() * 100),
     word: initialPlaceholder,
     currentIndex: 0,
   });
 
   useEffect(() => {
     const words = placeholder;
+
     // Function that executes every 2000 milliseconds
     if (words && Array.isArray(words)) {
       const interval = setInterval(function () {
         setInputPlaceholder(prev => ({
           ...prev,
-          id: Math.floor(Math.random() * 100),
+
           word: words[prev.currentIndex],
           currentIndex:
             prev.currentIndex === words.length - 1 ? 0 : prev.currentIndex + 1,
@@ -115,20 +124,23 @@ const ScoutbarInput: React.FC<IScoutBar> = ({
           onBlur={e => {
             if (e.target.value.trim() && showRecentSearch) {
               (setRecentSearch as Function)?.((prev: string[]) => {
-                const newRecentSearch = [...prev, e.target.value];
+                const newRecentSearch = [e.target.value, ...prev];
                 return Array.from(new Set(newRecentSearch));
               });
             }
           }}
+          aria-describedby="scoutbar-placeholder"
         />
 
-        <label htmlFor="scoutbar">
+        <label htmlFor="scoutbar" id="scoutbar-placeholder">
           {Array.isArray(placeholder)
-            ? inputPlaceholder.word.split(' ').map(word => (
-                <>
-                  <span key={`${word}:${inputPlaceholder.id}`}>{word}</span>{' '}
-                </>
-              ))
+            ? inputPlaceholder.word.split(' ').map((word, index) => {
+                return (
+                  <Fragment key={`${word}:${index}:${inputPlaceholder?.word}`}>
+                    <span>{word}</span>{' '}
+                  </Fragment>
+                );
+              })
             : initialPlaceholder}
         </label>
       </div>

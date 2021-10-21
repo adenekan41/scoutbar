@@ -1,15 +1,20 @@
-import { createContext } from 'react';
-import { IScoutSectionAction, IScoutAction } from './action-helpers';
+/* -------------------------------------------------------------------------- */
+/*                            External Dependencies                           */
+/* -------------------------------------------------------------------------- */
+import React, { createContext } from 'react';
+
+/* --------------------------- Internal Dependency -------------------------- */
+import { IScoutStems, IScoutSectionAction } from 'index';
 
 interface IScoutContext {
-  currentRoute?: string;
-  actions?: (IScoutSectionAction | IScoutAction)[];
+  actions?: IScoutStems;
+  setAction?: React.Dispatch<React.SetStateAction<IScoutStems>>;
   inputValue?: string;
   setInputValue?: (value: string) => void;
   currentSection?: IScoutSectionAction | null;
   setCurrentSection?: (section: IScoutSectionAction | null) => void;
-  setCurrentRoute?: (route: string) => void;
 }
 
 const ScoutBarContext = createContext<IScoutContext>({});
+
 export default ScoutBarContext;

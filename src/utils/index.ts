@@ -45,8 +45,28 @@ export const guidGenerator = () => {
  * @returns {Boolean} Returns a boolean if its empty
  */
 export const isEmpty = (data: any) => {
-  for (let key in data) {
+  for (const key in data) {
     if (data.hasOwnProperty(key)) return false;
   }
   return true;
+};
+
+export const getOS = () => {
+  if (!isBrowser()) return;
+
+  const userAgent = window.navigator.userAgent,
+    platform = window.navigator.platform,
+    macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+    windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+    iosPlatforms = ['iPhone', 'iPad', 'iPod'];
+
+  let os = null;
+
+  if (macosPlatforms.indexOf(platform) !== -1) os = 'Mac';
+  else if (iosPlatforms.indexOf(platform) !== -1) os = 'iOS';
+  else if (windowsPlatforms.indexOf(platform) !== -1) os = 'Windows';
+  else if (/Android/.test(userAgent)) os = 'Android';
+  else if (!os && /Linux/.test(platform)) os = 'Linux';
+
+  return os;
 };

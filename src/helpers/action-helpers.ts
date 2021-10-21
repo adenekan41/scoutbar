@@ -1,11 +1,12 @@
-import { guidGenerator } from '../utils';
+/* --------------------------- Internal Dependency -------------------------- */
+import { guidGenerator } from 'utils';
 
 export interface IScoutAction {
-  id: string;
+  id?: string;
   label: string;
-  type: 'scout-action';
+  type?: 'scout-action';
   href?: string;
-  action?: Function;
+  action?: () => void;
   target?: string;
   rel?: string;
   keyboardShortcut?: string[];
@@ -20,18 +21,26 @@ export interface IScoutSectionAction
   children: IScoutAction[];
 }
 
+/**
+ * Create a new scout action object
+ *
+ * @param   {IScoutAction}  args  [args description]
+ * @return  {IScoutAction}        [return description]
+ */
 export const createScoutAction = (args: IScoutAction): IScoutAction => {
-  return { ...args, id: guidGenerator(), type: 'scout-action' };
+  return { id: guidGenerator(), type: 'scout-action', ...args };
 };
 
-export const createScoutActionSection = (
+export const createScoutSection = (
   args: IScoutSectionAction
 ): IScoutSectionAction => {
   return { ...args, id: guidGenerator(), type: 'scout-section' };
 };
 
-export const createScoutActionSectionPage = (
+export const createScoutPage = (
   args: IScoutSectionAction
 ): IScoutSectionAction => {
   return { ...args, id: guidGenerator(), type: 'scout-section-page' };
 };
+
+export type IScoutStems = Array<IScoutAction | IScoutSectionAction>;

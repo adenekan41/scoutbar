@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 /* -------------------------- Internal Dependencies ------------------------- */
-import { ignoreStrokes } from './utils';
+import { ignoreStrokes } from 'utils';
 
 /**
  * Returns true if the key is pressed
@@ -19,7 +19,7 @@ import { ignoreStrokes } from './utils';
  * @returns True if the key is pressed
  */
 
-const useScoutKey = (targetKey: string, override: boolean = false): boolean => {
+const useScoutKey = (targetKey: string, override = false): boolean => {
   if (!targetKey)
     throw new Error(
       '⌨️ ScoutKey: the first Parameter must be a `KeyboardEvent.key`'

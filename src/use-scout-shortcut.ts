@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 /* -------------------------- Internal Dependencies ------------------------- */
-import { ignoreStrokes } from './utils';
+import { ignoreStrokes } from 'utils';
 
 /**
  * Returns true if the key is pressed
@@ -26,6 +26,7 @@ interface IScoutKeyOptions {
 interface IKeyMapping {
   [key: string]: boolean;
 }
+
 const disabledEventPropagation = (e: Event) => {
   if (!e) return;
 

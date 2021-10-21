@@ -12,17 +12,18 @@ import React, {
 } from 'react';
 
 /* -------------------------- Internal Dependencies ------------------------- */
-import { classNames, isEmpty } from '../../utils';
-import ScoutBarContext from '../../helpers/context';
+import { classNames, isEmpty } from 'utils';
+import ScoutBarContext from 'helpers/context';
 import {
   IScoutAction,
   IScoutSectionAction,
-} from '../../helpers/action-helpers';
-import { ScoutBarProps } from '../../scoutbar';
-import { useScoutKey, useScoutShortcut } from '../..';
-import useLocalStorage from '../../helpers/use-local-storage';
-import { IScoutStems } from '../../helpers/types';
-import Icon from '../icon';
+  ScoutBarProps,
+  useScoutKey,
+  useScoutShortcut,
+  useLocalStorage,
+  IScoutStems,
+} from 'index';
+import Icon from 'components/icon';
 
 /* --------------------------- Styles Dependencies -------------------------- */
 /* @ts-ignore */
@@ -33,8 +34,6 @@ const ScoutBarStem = ({
   brandColor,
   showRecentSearch,
 }: Partial<ScoutBarProps>) => {
-  if (isEmpty(actions)) return null;
-
   const [items, setItems] = useState<
     JSX.Element | JSX.Element[] | IScoutStems | undefined
   >(<></>);
@@ -189,6 +188,8 @@ const ScoutBarStem = ({
   useEffect(() => {
     setUpScoutbarStem();
   }, [setUpScoutbarStem]);
+
+  if (isEmpty(actions)) return null;
 
   return (
     <div
@@ -358,8 +359,8 @@ const RecentSearch: React.FC<{
           <div className={styles.recentSearch}>
             {recentSearch
               .slice(0, isShowMore ? recentSearch.length : 5)
-              ?.map(search => (
-                <div className={styles.recentCell}>
+              ?.map((search, index) => (
+                <div className={styles.recentCell} key={`${search}:${index}`}>
                   <Icon
                     width="24"
                     height="24"

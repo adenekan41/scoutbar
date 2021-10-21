@@ -1,3 +1,6 @@
+/* -------------------------------------------------------------------------- */
+/*                            External Dependencies                           */
+/* -------------------------------------------------------------------------- */
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 type SetValue<T> = Dispatch<SetStateAction<T>>;

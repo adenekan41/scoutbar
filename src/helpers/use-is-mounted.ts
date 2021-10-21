@@ -1,6 +1,9 @@
+/* -------------------------------------------------------------------------- */
+/*                            External Dependencies                           */
+/* -------------------------------------------------------------------------- */
 import { useCallback, useEffect, useRef } from 'react';
 
-function useIsMounted() {
+const useIsMounted = () => {
   const isMounted = useRef(false);
 
   useEffect(() => {
@@ -12,6 +15,6 @@ function useIsMounted() {
   }, []);
 
   return useCallback(() => isMounted.current, []);
-}
+};
 
 export default useIsMounted;

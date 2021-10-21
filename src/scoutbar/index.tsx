@@ -1,43 +1,39 @@
 /* -------------------------------------------------------------------------- */
 /*                            External Dependencies                           */
 /* -------------------------------------------------------------------------- */
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useEffect, useState, useRef, useContext, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import Fuse from 'fuse.js';
 
 /* -------------------------- Internal Dependencies ------------------------- */
-import { useScoutShortcut } from '..';
-import Icon from '../components/icon';
-import useOnClickOutside from '../helpers/use-click-outside';
-import { classNames, isBrowser } from '../utils';
-import ScoutBarInput from '../components/input';
-import ScoutSnackBar from '../components/snackbar';
-import ScoutBarStem from '../components/stem';
-import useIsMounted from '../helpers/use-is-mounted';
-import useTrapFocus from '../helpers/use-trap-focus';
+import Icon from 'components/icon';
+import ScoutBarInput from 'components/input';
+import ScoutSnackBar from 'components/snackbar';
+import ScoutBarStem from 'components/stem';
+import ScoutBarProvider from 'components/scout-bar-provider';
+
 import {
+  useScoutShortcut,
   IScoutAction,
   IScoutSectionAction,
-  createScoutActionSectionPage,
+  createScoutPage,
   createScoutAction,
-  createScoutActionSection,
-} from '../helpers/action-helpers';
-import ScoutBarContext from '../helpers/context';
+  createScoutSection,
+  IScoutStems,
+  useIsMounted,
+  useTrapFocus,
+  useOnClickOutside,
+} from 'index';
+import { classNames, isBrowser } from 'utils';
 
+/* ---------------------------- Styles Dependency --------------------------- */
 import '../styles/index.scss';
-import { IScoutStems } from '../helpers/types';
 
-type CallbackFunction = (props: {
-  createScoutAction: (action: IScoutAction) => void;
-  createScoutActionSection: (action: IScoutSectionAction) => void;
-  createScoutActionSectionPage: (action: IScoutSectionAction) => void;
+export type ScoutActionCreators = (props: {
+  createScoutAction: (action: IScoutAction) => IScoutAction;
+  createScoutSection: (action: IScoutSectionAction) => IScoutSectionAction;
+  createScoutPage: (action: IScoutSectionAction) => IScoutSectionAction;
 }) => (IScoutAction | IScoutSectionAction)[];
+
 export interface ScoutBarProps {
   /**
    * Show the scout bar tutorial user interface.
@@ -70,7 +66,7 @@ export interface ScoutBarProps {
   /**
    * Scoutbar placeholders
    */
-  placeholder: string[] | string;
+  placeholder?: string[] | string;
   /**
    * Enable double scrolling and allow users to scroll on body
    * @default true
@@ -79,7 +75,7 @@ export interface ScoutBarProps {
   /**
    * Set Scoutbar action
    */
-  actions: (IScoutAction | IScoutSectionAction)[] | CallbackFunction;
+  actions: (IScoutAction | IScoutSectionAction)[] | ScoutActionCreators;
   /**
    * Allow users to tab out of the scoutbar
    * @default false
@@ -173,53 +169,11 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   disableSnackbar,
   snackBar,
 }) => {
-  const [open, setOpen] = useState(false);
-  const [section, setSection] = useState<IScoutSectionAction | null>(null);
+  const [scoutbarOpen, setScoutbarOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const [activeRoute, setActiveRoute] = useState<string>(
-    (isBrowser() && window.location.pathname) || ''
-  );
 
   const ref = useRef(null);
   const isMounted = useIsMounted();
-
-  let socutbar___root: React.MutableRefObject<null | HTMLDivElement> = useRef(
-    isBrowser() ? window.document.createElement('div') : null
-  );
-
-  useEffect(() => {
-    (socutbar___root.current as any).setAttribute('id', 'scoutbar___root');
-    window.document.body.appendChild(socutbar___root.current as any);
-  }, [socutbar___root.current]);
-
-  useScoutShortcut(['meta', 'k'], () => {
-    if (open) handleClickOutside();
-    else setOpen(true);
-  });
-
-  useScoutShortcut(['escape'], () => {
-    handleClickOutside();
-  });
-
-  const handleClickOutside = () => {
-    (ref as any).current?.classList.add('scoutbar___hide');
-    if (!persistInput) setInputValue('');
-    setTimeout(() => setOpen(false), noAnimation ? 0 : 300);
-  };
-
-  useOnClickOutside(
-    disableClickOutside ? (null as any) : ref,
-    handleClickOutside
-  );
-
-  useTrapFocus({
-    elementState: open,
-    bodyScroll,
-    focusAbleElement: disableFocusTrap
-      ? ''
-      : 'body > div:not(#scoutbar___root)',
-    disableFocusTrap,
-  });
 
   /**
    * Revise action data type if its a function to a an array
@@ -229,74 +183,75 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
    * ...
    * actions={({ createScoutAction,createScoutActionSection,createScoutActionSectionPage}) => [...]}
    */
+
   const revisedAction: IScoutStems = useMemo(() => {
     return Array.isArray(actions)
       ? actions
       : actions?.({
           createScoutAction,
-          createScoutActionSection,
-          createScoutActionSectionPage,
+          createScoutSection,
+          createScoutPage,
         });
   }, [actions]);
 
-  const searchItem = useCallback(
-    value => {
-      const fuse = new Fuse(revisedAction as IScoutStems, {
-        shouldSort: true,
-        threshold: 0.3,
-        location: 0,
-        distance: 100,
-        keys: [
-          'label',
-          'description',
-          'children.label',
-          'children.description',
-        ],
-      });
-
-      const result = fuse.search(inputValue || value);
-
-      const finalResult: IScoutStems = [];
-
-      if (result.length) {
-        result.forEach((item: any) => {
-          finalResult.unshift(item.item);
-        });
-        setSection?.(finalResult as unknown as IScoutSectionAction);
-      } else {
-        setSection?.(null);
-      }
-    },
-    [inputValue, setSection]
+  const socutbar___root: React.MutableRefObject<null | HTMLDivElement> = useRef(
+    isBrowser() ? window.document.createElement('div') : null
   );
 
-  return isMounted() && socutbar___root.current
-    ? createPortal(
+  useEffect(() => {
+    (socutbar___root.current as any).setAttribute('id', 'scoutbar___root');
+    window.document.body.appendChild(socutbar___root.current as any);
+  }, [socutbar___root.current]);
+
+  useScoutShortcut(['meta', 'k'], () => {
+    if (scoutbarOpen) handleClickOutside();
+    else setScoutbarOpen(true);
+  });
+
+  useScoutShortcut(['escape'], () => {
+    handleClickOutside();
+  });
+
+  const handleClickOutside = () => {
+    (ref as any).current?.classList.add('scoutbar___hide');
+    if (!persistInput) setInputValue?.('');
+    setTimeout(() => setScoutbarOpen(false), noAnimation ? 0 : 300);
+  };
+
+  useOnClickOutside(
+    disableClickOutside ? (null as any) : ref,
+    handleClickOutside
+  );
+
+  useTrapFocus({
+    elementState: scoutbarOpen,
+    bodyScroll,
+    focusAbleElement: disableFocusTrap
+      ? ''
+      : 'body > div:not(#scoutbar___root)',
+    disableFocusTrap,
+  });
+
+  return isMounted() && socutbar___root.current ? (
+    <>
+      {createPortal(
         <>
           {!disableSnackbar
-            ? !open && (
+            ? !scoutbarOpen && (
                 <ScoutSnackBar
-                  setController={setOpen}
+                  setController={setScoutbarOpen}
                   brandColor={brandColor}
                   theme={theme}
                   snackBar={snackBar}
                 />
               )
             : null}
-          {open && (
-            <ScoutBarContext.Provider
-              value={{
-                actions: revisedAction,
-                currentRoute: activeRoute,
+          {scoutbarOpen && (
+            <ScoutBarProvider
+              actions={revisedAction}
+              values={{
                 inputValue,
-                setInputValue: (value: string) => {
-                  setInputValue(value);
-                  searchItem(value);
-                },
-                currentSection: section,
-                setCurrentRoute: (route: string) => setActiveRoute(route),
-                setCurrentSection: (section: IScoutSectionAction | null) =>
-                  setSection(section),
+                setInputValue,
               }}
             >
               <main className="___scout">
@@ -326,7 +281,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
 
                     <ScoutBarStem
                       actions={
-                        noResultsOnEmptySearch && inputValue.trim() === ''
+                        noResultsOnEmptySearch && inputValue?.trim() === ''
                           ? []
                           : revisedAction
                       }
@@ -344,12 +299,13 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
                   </div>
                 </div>
               </main>
-            </ScoutBarContext.Provider>
+            </ScoutBarProvider>
           )}
         </>,
         socutbar___root.current
-      )
-    : null;
+      )}{' '}
+    </>
+  ) : null;
 };
 
 export const ScoutTutorial: React.FC<Partial<ScoutBarProps>> = ({
