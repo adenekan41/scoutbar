@@ -1,6 +1,6 @@
 <br />
 <p align="center">
-  <img src="https://i.ibb.co/48t7SBX/Group-11.png" width="280"/>
+  <img src="https://i.ibb.co/bXmx6mh/Group-11.png" width="280"/>
 </p>
 <h2 align="center">Scoutbar</h2>
 
@@ -81,7 +81,109 @@ instructions on how to use them, in the documentation.
 
 ## 🍷 Documentation
 
-Coming soon ...
+### tutorial
+
+#### `Type -> Boolean`
+
+#### `Default -> true`
+
+Allows you the abilty to disable / hide scoutbar tutorial hints. i'e the section
+that tells users to navigate with the arrows or tabs. e.g
+
+```jsx
+  <ScoutBar
+    tutorial={false}
+    ...
+  />
+```
+
+### noAnimation
+
+#### `Type -> Boolean`
+
+#### `Default -> false`
+
+Allows you to disable every animation on scoutbar Disables every animations on
+scoutbar. this is by default true if scoutbar detects that the user has
+requested that the system minimize the amount of non-essential motion it uses.
+
+```jsx
+  <ScoutBar
+    noAnimation={false}
+    ...
+  />
+```
+
+### theme
+
+#### `Type -> 'light' | 'dark' | 'auto'`
+
+#### `Default -> 'light'`
+
+Allows you to switch the theme of the scoutbar depeneding on how you want it.
+auto switches to the theme of the current system.
+
+```jsx
+  <ScoutBar
+    theme="light"
+    ...
+  />
+```
+
+### aknowledgement
+
+#### `Type -> Boolean`
+
+#### `Default -> true`
+
+Show the scoutbar aknowledgemnt logo on the top right of the input bar.
+
+```jsx
+  <ScoutBar
+   aknowledgement={true}
+    ...
+  />
+```
+
+### brandColor
+
+#### `Type -> String`
+
+#### `Default -> #000`
+
+Allows you to set the official scoutbar brand color. it helps to matcht the
+color grade on your application
+
+```jsx
+  <ScoutBar
+   brandColor="red"
+    ...
+  />
+```
+
+### placeholder
+
+#### `Type -> String | String[]`
+
+#### `Default -> ['What would you like to do today ?','What do you need?', 'Lets help you navigate'],`
+
+Allows you to switch between different placeholder texts or just a single one.
+
+```jsx
+  <ScoutBar
+    placeholder={[
+      'What products do you need ? ',
+      'Whats the name of your phone ?'
+    ]}
+
+    or
+
+    placeholder="What do you need ?"
+    ...
+  />
+```
+
+[See All Documentation](https://scoutbar.co/docs)
 
 ## 🤔Thought Process
 
