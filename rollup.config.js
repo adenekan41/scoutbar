@@ -1,15 +1,23 @@
-import { terser } from 'rollup-plugin-terser';
+/* -------------------------------------------------------------------------- */
+/*                            External Dependencies                           */
+/* -------------------------------------------------------------------------- */
+import * as path from 'path';
+
 import pluginTypescript from '@rollup/plugin-typescript';
 import pluginCommonjs from '@rollup/plugin-commonjs';
 import pluginNodeResolve from '@rollup/plugin-node-resolve';
 import { babel } from '@rollup/plugin-babel';
-import * as path from 'path';
-import defaultTsConfig from './tsconfig.json';
+
+import { terser } from 'rollup-plugin-terser';
 import multiInput from 'rollup-plugin-multi-input';
-import pkg from './package.json';
 import postcss from 'rollup-plugin-postcss';
+
 import postcssImport from 'postcss-import';
 import autoprefixer from 'autoprefixer';
+
+/* -------------------------- Internal Dependencies ------------------------- */
+import pkg from './package.json';
+import defaultTsConfig from './tsconfig.json';
 
 const moduleName = pkg.name.replace(/^@.*\//, '');
 const inputFileName = ['src/**/*.ts', 'src/**/*.tsx'];
@@ -23,10 +31,12 @@ const bundles = {
 
 const banner = `
   /**
-   * @license
-   * author: ${author}
-   * ${moduleName}.js v${pkg.version}
-   * Released under the ${pkg.license} license.
+   * ${moduleName}.js 
+   * @summary ${pkg.description}
+   * @version v${pkg.version}
+   * @author  ${author}
+   * @license Released under the ${pkg.license} license.
+   * @copyright Adenekan Wonderful 2021
    */
 `;
 
@@ -36,7 +46,6 @@ const pluginsSetups = bundle => ({
     ...Object.keys(pkg.devDependencies || {}),
     'react',
     'react-dom',
-    'prop-types',
   ],
   plugins: [
     multiInput(),
@@ -53,15 +62,16 @@ const pluginsSetups = bundle => ({
     babel({
       babelHelpers: 'bundled',
       configFile: path.resolve(__dirname, '.babelrc.js'),
-      extensions: ['.js', '.ts', '.tsx'],
+      extensions: ['.ts', '.tsx'],
+      exclude: 'node_modules/**',
     }),
 
     pluginCommonjs({
-      extensions: ['.js', '.ts', '.tsx'],
+      extensions: ['.ts', '.tsx'],
     }),
 
     pluginNodeResolve({
-      browser: false,
+      browser: bundle === bundles.browser ? true : false,
     }),
   ],
 });
@@ -69,13 +79,6 @@ const pluginsSetups = bundle => ({
 export default [
   {
     input: inputFileName,
-    external: [
-      ...Object.keys(pkg.dependencies || {}),
-      ...Object.keys(pkg.devDependencies || {}),
-      'react',
-      'react-dom',
-      'prop-types',
-    ],
     output: [
       {
         name: moduleName,
@@ -86,33 +89,7 @@ export default [
         plugins: [terser()],
       },
     ],
-    plugins: [
-      multiInput(),
-      postcss({ plugins: [postcssImport(), autoprefixer()], minimize: true }),
-      pluginTypescript({
-        ...defaultTsConfig.compilerOptions,
-        ...{
-          declaration: true,
-          emitDeclarationOnly: true,
-          outDir: `${bundles.browser}`,
-          declarationDir: `${bundles.browser}`,
-          exclude: [...defaultTsConfig.exclude],
-        },
-      }),
-      babel({
-        babelHelpers: 'bundled',
-        configFile: path.resolve(__dirname, '.babelrc.js'),
-        extensions: ['.js', '.ts', '.tsx'],
-      }),
-
-      pluginCommonjs({
-        extensions: ['.js', '.ts', '.tsx'],
-      }),
-
-      pluginNodeResolve({
-        browser: true,
-      }),
-    ],
+    ...pluginsSetups(bundles.browser),
   },
 
   // ES

@@ -1441,11 +1441,6 @@ braces@^3.0.1:
   dependencies:
     fill-range "^7.0.1"
 
-broad-state@^1.1.7:
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/broad-state/-/broad-state-1.1.7.tgz#d4680840005ea1ff43e5321f51291424ba8e5f29"
-  integrity sha512-Be1LE4V/0wQCe9a2x2vxpBhgG4v+3BcbYgzPlMWr1LsM+H4N6ktUr6oCZnvcRdoQdDnknBYS6Xi375tDiiaXhg==
-
 brotli-size@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/brotli-size/-/brotli-size-0.1.0.tgz#a2c518096c7c1a75e9e66908a42cd9dc77d2b69f"
