@@ -123,6 +123,11 @@ export interface ScoutBarProps {
     position?: 'top' | 'bottom';
     style?: React.CSSProperties;
   };
+  /**
+   * Reveal the scoutbar
+   * @default false
+   */
+  revealScoutbar?: boolean;
 }
 
 export const defaultProps: Partial<ScoutBarProps> = {
@@ -145,6 +150,7 @@ export const defaultProps: Partial<ScoutBarProps> = {
   persistInput: false,
   disableClickOutside: false,
   disableSnackbar: false,
+  revealScoutbar: false,
   snackBar: {
     position: 'bottom',
   },
@@ -168,8 +174,9 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   disableClickOutside,
   disableSnackbar,
   snackBar,
+  revealScoutbar,
 }) => {
-  const [scoutbarOpen, setScoutbarOpen] = useState(false);
+  const [scoutbarOpen, setScoutbarOpen] = useState(revealScoutbar || false);
   const [inputValue, setInputValue] = useState('');
 
   const ref = useRef(null);
@@ -199,8 +206,15 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   );
 
   useEffect(() => {
-    (socutbar___root.current as any).setAttribute('id', 'scoutbar___root');
-    window.document.body.appendChild(socutbar___root.current as any);
+    setScoutbarOpen(revealScoutbar || false);
+  }, [revealScoutbar]);
+
+  useEffect(() => {
+    (socutbar___root.current as HTMLElement).setAttribute(
+      'id',
+      'scoutbar___root'
+    );
+    window.document.body.appendChild(socutbar___root.current as HTMLElement);
   }, [socutbar___root.current]);
 
   useScoutShortcut(['meta', 'k'], () => {
@@ -213,7 +227,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   });
 
   const handleClickOutside = () => {
-    (ref as any).current?.classList.add('scoutbar___hide');
+    (ref as HTMLElement | any).current?.classList.add('scoutbar___hide');
     if (!persistInput) setInputValue?.('');
     setTimeout(() => setScoutbarOpen(false), noAnimation ? 0 : 300);
   };
@@ -262,7 +276,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
                   ])}
                   ref={ref}
                   style={{
-                    ['--scoutbar-width' as any]: barWidth,
+                    ['--scoutbar-width' as string]: barWidth,
                   }}
                 >
                   <div
