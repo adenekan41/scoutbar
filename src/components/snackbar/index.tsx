@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------------- */
 /*                            External Dependencies                           */
 /* -------------------------------------------------------------------------- */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 /* -------------------------- Internal Dependencies ------------------------- */
 import { ScoutBarProps } from 'index';
@@ -10,6 +10,7 @@ import Icon from 'components/icon';
 
 /* @ts-ignore */
 import styles from './snackbar.module.scss';
+import useScoutKey from 'use-scout-key';
 
 interface IScoutSnackbarProps extends Partial<ScoutBarProps> {
   setController: Function;
@@ -20,7 +21,14 @@ const ScoutSnackBar: React.FC<IScoutSnackbarProps> = ({
   snackBar,
   theme,
 }) => {
-  const [showSnackBar, setShowSnackBar] = useState(true);
+  const [showSnackBar, setShowSnackBar] = useState(false);
+  const metaKey = useScoutKey('Meta');
+
+  useEffect(() => {
+    if (metaKey) {
+      setShowSnackBar(true);
+    }
+  }, [metaKey]);
 
   return (
     <>
@@ -33,8 +41,8 @@ const ScoutSnackBar: React.FC<IScoutSnackbarProps> = ({
             styles[snackBar?.position || 'bottom'],
           ])}
           style={{
-            ['--scout-snackbar-background' as any]: snackBar?.background,
-            ['--scout-snackbar-color' as any]: snackBar?.color,
+            ['--scout-snackbar-background' as string]: snackBar?.background,
+            ['--scout-snackbar-color' as string]: snackBar?.color,
             ...snackBar?.style,
           }}
         >
