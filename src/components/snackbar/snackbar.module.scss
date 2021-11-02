@@ -26,10 +26,10 @@
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.2s ease;
-  width: 350px;
+  min-width: 322px;
 
   @include respond-below(xs) {
-    width: 90%;
+    display: none;
   }
 
   @keyframes fadeIn {
@@ -52,6 +52,7 @@
     background: transparent;
     border: none;
     padding: 12px 10px 12px 0px;
+    cursor: pointer;
     svg {
       path {
         fill: var(--scout-white);
@@ -61,7 +62,7 @@
 
   .button {
     width: 100%;
-    padding: 12px 25px;
+    padding: 10px 21px;
     text-align: left;
     background: transparent;
 
