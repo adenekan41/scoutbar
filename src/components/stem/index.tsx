@@ -49,9 +49,9 @@ const ScoutBarStem = ({
   /**
    * Scout Key Stroke Handlers
    */
-  const downPress = useScoutKey('ArrowDown');
-  const upPress = useScoutKey('ArrowUp');
-  const enterPress = useScoutKey('Enter');
+  const downPress = useScoutKey('ArrowDown', true);
+  const upPress = useScoutKey('ArrowUp', true);
+  const enterPress = useScoutKey('Enter', true);
 
   const ref = useRef(null);
 
@@ -189,12 +189,10 @@ const ScoutBarStem = ({
     setUpScoutbarStem();
   }, [setUpScoutbarStem]);
 
-  if (isEmpty(actions)) return null;
-
   return (
     <div
       className={styles.scoutbarStem}
-      style={{ ['--scout-brand-primary' as any]: brandColor }}
+      style={{ ['--scout-brand-primary' as string]: brandColor }}
       ref={ref}
     >
       <div className={styles.scoutbarStemInner}>
@@ -220,7 +218,7 @@ const ScoutBarStem = ({
                 setInputValue={setInputValue}
               />
             )}
-            {items}
+            {!isEmpty(actions) && items}
           </>
         )}
       </div>
@@ -250,11 +248,25 @@ const ScoutbarStemCell: React.FC<{
     item.action?.call(e);
   }, []);
 
+  const handleShortcutAction: React.MouseEventHandler<
+    HTMLButtonElement | HTMLAnchorElement
+  > = useCallback(e => {
+    /**
+     * Make the element active has a click event that matches expected behaviour
+     */
+
+    if (isNewPage) return setCurrentSection?.(item);
+    if (item.href && !item?.target) return window.location.assign(item?.href);
+    if (item.href && item?.target) return window.open(item?.href, item?.target);
+
+    item.action?.call(e);
+  }, []);
+
   const keyboardShortcut =
     (item.type === 'scout-action' && item.keyboardShortcut) || [];
 
   if (keyboardShortcut.length > 0) {
-    useScoutShortcut([...keyboardShortcut], handleClick);
+    useScoutShortcut([...keyboardShortcut], handleShortcutAction);
   }
 
   const CommonElement = () => (
