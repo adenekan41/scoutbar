@@ -2,7 +2,7 @@
 <p align="center">
   <img src="https://i.ibb.co/bXmx6mh/Group-11.png" width="280"/>
 </p>
-<h2 align="center">Scoutbar</h2>
+<h2 align="center">ScoutBar</h2>
 
 <p align="center">⌨️ Spolight for your app</p>
 
@@ -13,14 +13,16 @@
 
 [![NPM](https://nodei.co/npm/scoutbar.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/scoutbar/)
 
-### [See Demo On Codesandbox](https://codesandbox.io/s/jolly-gould-6s6yl?file=/src/App.js)
+### [See Demo On Codesandbox](https://codesandbox.io/s/scoutbar-gm9er?file=/src/App.tsx)
+
+### [See Documentation](https://scoutbar.co)
 
 ## ⚡️Overview
 
 Users enjoy hitting `CMD + K` to search and perform complex actions online on
 big projects like Slack, Workspace by Facebook, etc. Users with good knowledge
 of what they are looking for have been proven to be able to navigate apps more
-effectively by 22%. Introduce Scourbar, an easy-to-install, portable, and
+effectively by 21%. Introduce Scoutbar, an easy-to-install, portable, and
 extensible React component for automating your `command+k` experience.
 
 ## 🔧 Installation
@@ -79,7 +81,7 @@ export default function App() {
 Seeing is believing! There are clear descriptions of each utility, as well as
 instructions on how to use them, in the documentation.
 
-## 🍷 Documentation
+## 🍷 Documentation [See All](https://scoutbar.co/docs/home)
 
 ### tutorial
 
@@ -183,7 +185,22 @@ Allows you to switch between different placeholder texts or just a single one.
   />
 ```
 
-[See All Documentation](https://scoutbar.co/docs)
+### revealScoutbar
+
+#### `Type -> boolean`
+
+#### `Default -> false`
+
+Reveal the scoutbar with an external action. PS forcefully opens the scoutbar
+
+```jsx
+  <ScoutBar
+revealScoutbar={// youe state hook here }
+    ...
+  />
+```
+
+[See All Documentation](https://scoutbar.co/docs/home)
 
 ## 🤔Thought Process
 
