@@ -2,11 +2,11 @@
 /*                            External Dependencies                           */
 /* -------------------------------------------------------------------------- */
 import React, { useCallback, useState } from 'react';
-import Fuse from 'fuse.js';
 
 /* -------------------------- Internal Dependencies ------------------------- */
 import ScoutBarContext from 'helpers/context';
 import { IScoutStems, IScoutSectionAction, ScoutBarProps } from 'index';
+import scoutSearch from 'helpers/scout-search';
 
 interface ScoutBarProviderProps extends Partial<ScoutBarProps> {
   values?: {
@@ -38,33 +38,15 @@ const ScoutBarProvider: React.FC<ScoutBarProviderProps> = ({
 
   const searchItem = useCallback(
     value => {
-      const fuse = new Fuse(currentAction as IScoutStems, {
-        shouldSort: true,
-        threshold: 0.2,
-        location: 0,
-        distance: 100,
-        keys: [
-          'label',
-          'description',
-          'children.label',
-          'children.description',
-        ],
-      });
-
-      const result = fuse.search(inputValue || value);
-
-      const finalResult: IScoutStems = [];
+      const result = scoutSearch(currentAction, inputValue || value);
 
       if (result.length) {
-        result.forEach((item: any) => {
-          finalResult.push(item.item);
-        });
-        setSection?.(finalResult as unknown as IScoutSectionAction);
+        setSection?.(result as unknown as IScoutSectionAction);
       } else {
         setSection?.(null);
       }
     },
-    [inputValue, setSection]
+    [setSection, scoutSearch]
   );
 
   return (
@@ -73,8 +55,8 @@ const ScoutBarProvider: React.FC<ScoutBarProviderProps> = ({
         actions: currentAction,
         setAction,
         inputValue,
-        setInputValue: (value: string) => {
-          setInputValue?.(value);
+        setInputValue: async (value: string) => {
+          await setInputValue?.(value);
           searchItem(value);
         },
         currentSection: section,
