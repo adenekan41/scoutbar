@@ -215,8 +215,9 @@
         display: flex;
         span {
           height: 20px;
-          width: 20px;
+          min-width: 20px;
           opacity: 1;
+          padding: 0px 5px;
           align-items: center;
           margin: 0 7px 0 0;
           justify-content: center;
