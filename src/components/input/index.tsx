@@ -1,7 +1,13 @@
 /* -------------------------------------------------------------------------- */
 /*                            External Dependencies                           */
 /* -------------------------------------------------------------------------- */
-import React, { Fragment, useContext, useEffect, useState } from 'react';
+import React, {
+  Fragment,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 /* -------------------------- Internal Dependencies ------------------------- */
 import { useScoutKey, ScoutBarProps, defaultProps } from 'index';
@@ -26,6 +32,7 @@ const ScoutbarInput: React.FC<IScoutBar> = ({
   showRecentSearch,
   closeScoutbar,
 }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
   // Initialize the placeholder
   const initialPlaceholder =
     placeholder && Array.isArray(placeholder)
@@ -50,6 +57,9 @@ const ScoutbarInput: React.FC<IScoutBar> = ({
   });
 
   useEffect(() => {
+    // Auto focus on input
+    inputRef.current?.focus();
+
     const words = placeholder;
 
     // Function that executes every 2000 milliseconds
@@ -124,11 +134,12 @@ const ScoutbarInput: React.FC<IScoutBar> = ({
           onBlur={e => {
             if (e.target.value.trim() && showRecentSearch) {
               (setRecentSearch as Function)?.((prev: string[]) => {
-                const newRecentSearch = [e.target.value, ...prev];
+                const newRecentSearch = [e.target.value, ...prev].splice(0, 10);
                 return Array.from(new Set(newRecentSearch));
               });
             }
           }}
+          ref={inputRef}
           aria-describedby="scoutbar-placeholder"
         />
 
