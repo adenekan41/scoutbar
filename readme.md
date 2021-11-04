@@ -15,7 +15,7 @@
 
 ### [See Demo On Codesandbox](https://codesandbox.io/s/scoutbar-gm9er?file=/src/App.tsx)
 
-### [See Documentation](https://scoutbar.co)
+### [See Documentation](https://scoutbar.co/docs/home)
 
 ## ⚡️Overview
 
