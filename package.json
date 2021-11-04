@@ -85,8 +85,5 @@
   ],
   "peerDependencies": {
     "react": ">= 16.8.0"
-  },
-  "dependencies": {
-    "fuse.js": "^6.4.6"
   }
 }
