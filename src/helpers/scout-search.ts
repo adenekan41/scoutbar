@@ -21,7 +21,9 @@ const contains = (initialValue: string, patterns: Array<string>) => {
 const scoutSearch = (nodes: IScoutStems, keyword: string) => {
   const isScoutSection = (type: string | undefined) =>
     type === 'scout-section' || type === 'scout-section-page';
-  const search = keyword.toLowerCase().trim();
+  const toLowerCase = (str: string) => str?.toLowerCase();
+
+  const search = toLowerCase(keyword).trim();
 
   const res: IScoutStems = [];
 
@@ -32,8 +34,8 @@ const scoutSearch = (nodes: IScoutStems, keyword: string) => {
        */
 
       const isContained = contains(word, [
-        doc[i].label.toLowerCase(),
-        doc[i].description?.toLowerCase() || '',
+        toLowerCase(doc[i].label),
+        toLowerCase(doc[i]?.description || ''),
       ]);
 
       /**
@@ -47,6 +49,14 @@ const scoutSearch = (nodes: IScoutStems, keyword: string) => {
 
       if (isContained && isScoutSection(doc[i]?.type)) {
         res.push(doc[i]);
+        /**
+         * Stop searching in the children if the keyword matches excatly a section
+         */
+        if (
+          toLowerCase(doc[i].label) === word ||
+          toLowerCase(doc[i].label).startsWith(word)
+        )
+          break;
       }
 
       /**
@@ -55,7 +65,7 @@ const scoutSearch = (nodes: IScoutStems, keyword: string) => {
        * and not just the first level
        */
       if ((doc[i] as IScoutSectionAction)?.children)
-        findNode((doc[i] as IScoutSectionAction)?.children, word.toLowerCase());
+        findNode((doc[i] as IScoutSectionAction)?.children, toLowerCase(word));
     }
   };
 
@@ -65,7 +75,7 @@ const scoutSearch = (nodes: IScoutStems, keyword: string) => {
    * Rearrange result by their level of correctness to the search
    */
   return res.sort(a => {
-    if (a.label.toLowerCase().startsWith(search)) {
+    if (toLowerCase(a.label).startsWith(search)) {
       return -1;
     }
     return 0;

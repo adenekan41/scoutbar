@@ -46,7 +46,8 @@ export const guidGenerator = () => {
  */
 export const isEmpty = (data: any) => {
   for (const key in data) {
-    if (data.hasOwnProperty(key)) return false;
+    // eslint-disable-next-line no-prototype-builtins
+    if (data?.hasOwnProperty(key)) return false;
   }
   return true;
 };
