@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------------- */
 /*                            External Dependencies                           */
 /* -------------------------------------------------------------------------- */
-import React, { useEffect, useState, useRef, useContext, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 
 /* -------------------------- Internal Dependencies ------------------------- */
@@ -217,14 +217,22 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
     window.document.body.appendChild(socutbar___root.current as HTMLElement);
   }, [socutbar___root.current]);
 
-  useScoutShortcut(['meta', 'k'], () => {
-    if (scoutbarOpen) handleClickOutside();
-    else setScoutbarOpen(true);
-  });
+  useScoutShortcut(
+    ['meta', 'k'],
+    () => {
+      if (scoutbarOpen) handleClickOutside();
+      else setScoutbarOpen(true);
+    },
+    { universal: true }
+  );
 
-  useScoutShortcut(['escape'], () => {
-    handleClickOutside();
-  });
+  useScoutShortcut(
+    ['escape'],
+    () => {
+      handleClickOutside();
+    },
+    { universal: true }
+  );
 
   const handleClickOutside = () => {
     (ref as HTMLElement | any).current?.classList.add('scoutbar___hide');

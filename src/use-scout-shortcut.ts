@@ -21,6 +21,7 @@ import { ignoreStrokes } from 'utils';
 
 interface IScoutKeyOptions {
   override?: boolean;
+  universal?: boolean;
 }
 
 interface IKeyMapping {
@@ -44,13 +45,16 @@ const useScoutShortcut = (
       '⌨️ ScoutKey: the first Parameter must either be a `KeyboardEvent.key` or an Array of `KeyboardEvent.key`'
     );
 
-  const { override } = options || {};
+  const { override, universal = false } = options || {};
 
-  const keyMapping = () =>
-    targetKeys.reduce((currentKeys: IKeyMapping, key) => {
-      currentKeys[key.toLowerCase()] = false;
-      return currentKeys;
-    }, {});
+  const keyMapping = useCallback(
+    () =>
+      targetKeys.reduce((currentKeys: IKeyMapping, key) => {
+        currentKeys[key.toLowerCase()] = false;
+        return currentKeys;
+      }, {}),
+    [targetKeys]
+  );
 
   const [keyMaps, setKeyMaps] = useState<IKeyMapping>(keyMapping);
 
@@ -68,7 +72,8 @@ const useScoutShortcut = (
 
         /** Check if the key is in the list of keys to listen for, do nothing */
         if (key !== event.key.toLowerCase()) return;
-        if (ignoreStrokes((event.target as HTMLElement).tagName)) return;
+        if (ignoreStrokes((event.target as HTMLElement).tagName) && !universal)
+          return;
 
         if (override) {
           event.preventDefault();
@@ -78,7 +83,7 @@ const useScoutShortcut = (
 
         setKeyMaps(prev => ({ ...prev, [key]: true }));
       },
-    [override]
+    [override, universal]
   );
 
   const upHandler = useCallback(
@@ -91,7 +96,8 @@ const useScoutShortcut = (
 
         /** Check if the key is in the list of keys to listen for, do nothing */
         if (key !== event.key.toLowerCase()) return;
-        if (ignoreStrokes((event.target as HTMLElement).tagName)) return;
+        if (ignoreStrokes((event.target as HTMLElement).tagName) && !universal)
+          return;
 
         if (override) {
           event.preventDefault();
@@ -101,7 +107,7 @@ const useScoutShortcut = (
 
         setKeyMaps(prev => ({ ...prev, [key]: false }));
       },
-    [override]
+    [override, universal]
   );
 
   useEffect(() => {
