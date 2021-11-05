@@ -51,6 +51,7 @@ $ npm install scoutbar
 - ✅ Fully tested, typed and reliable
 - ⚒ CommonJS, ESM & browser standalone support
 - 👨🏽‍🔧 Handy and useful helpers
+- 👨🏽 Zero Dependencies
 
 ## 📖 Usage
 
@@ -217,6 +218,8 @@ issue and pull request simultaneously.
 
 Please note we have a code of conduct, please follow it in all your interactions
 with the project.
+
+[See More on contributing](https://scoutbar.co/docs/contribute)
 
 ## 🤝 License
 
