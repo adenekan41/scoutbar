@@ -195,10 +195,14 @@
 
       span {
         display: block;
-        font-size: 0.813rem;
-        opacity: 0.45;
-        margin-top: 6px;
       }
+
+      .description {
+        margin-top: 6px;
+        opacity: 0.45;
+        font-size: 0.813rem;
+      }
+
       .shortcut,
       .newPageIcon {
         position: absolute;

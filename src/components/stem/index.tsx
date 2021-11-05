@@ -279,13 +279,15 @@ const ScoutbarStemCell: React.FC<{
 
       <p>
         {item.label}
-        {item.description && <span>{item.description}</span>}
+        {item.description && (
+          <span className={styles.description}>{item.description}</span>
+        )}
         {keyboardShortcut.length > 0 && (
-          <div className={styles.shortcut}>
+          <span className={styles.shortcut}>
             {keyboardShortcut?.map((key: string) => (
               <span key={key}>{key}</span>
             ))}
-          </div>
+          </span>
         )}
 
         {isNewPage && (
