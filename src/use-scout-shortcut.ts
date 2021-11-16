@@ -78,7 +78,6 @@ const useScoutShortcut = (
         if (override) {
           event.preventDefault();
           disabledEventPropagation(event);
-          return;
         }
 
         setKeyMaps(prev => ({ ...prev, [key]: true }));
@@ -102,7 +101,6 @@ const useScoutShortcut = (
         if (override) {
           event.preventDefault();
           disabledEventPropagation(event);
-          return;
         }
 
         setKeyMaps(prev => ({ ...prev, [key]: false }));
