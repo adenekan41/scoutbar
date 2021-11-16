@@ -11,10 +11,10 @@
   "browser": "dist/scoutbar/index.js",
   "scripts": {
     "flush": "rm -rf dist",
-    "build": "yarn flush && rollup -c && bundlesize",
+    "build": "NODE_ENV=prod yarn flush && rollup -c  && bundlesize ",
     "lint": "eslint --fix 'src/**/*'",
     "test": "jest",
-    "dev": "yarn flush && rollup -c -w",
+    "dev": "NODE_ENV=dev yarn flush && rollup -c -w",
     "prepublishOnly": "npm run build",
     "ts-types": " tsc --emitDeclarationOnly",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",

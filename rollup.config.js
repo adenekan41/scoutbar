@@ -84,17 +84,19 @@ export default [
         format: 'esm',
         sourcemap: 'inline',
         banner,
-        plugins: [
-          terser(),
-          serve({
-            verbose: true,
-            contentBase: '',
-            historyApiFallback: false,
-            host: 'localhost',
-            port: 3008,
-          }),
-          livereload('dist'),
-        ],
+        plugins:
+          process.env.NODE_ENV === 'prod'
+            ? [terser()]
+            : [
+                serve({
+                  verbose: true,
+                  contentBase: '',
+                  historyApiFallback: false,
+                  host: 'localhost',
+                  port: 3008,
+                }),
+                livereload('dist'),
+              ],
       },
     ],
     ...pluginsSetups(bundles.browser),
