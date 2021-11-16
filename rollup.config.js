@@ -15,6 +15,9 @@ import postcss from 'rollup-plugin-postcss';
 import postcssImport from 'postcss-import';
 import autoprefixer from 'autoprefixer';
 
+import serve from 'rollup-plugin-serve';
+import livereload from 'rollup-plugin-livereload';
+
 /* -------------------------- Internal Dependencies ------------------------- */
 import pkg from './package.json';
 import defaultTsConfig from './tsconfig.json';
@@ -41,12 +44,7 @@ const banner = `
 `;
 
 const pluginsSetups = bundle => ({
-  external: [
-    ...Object.keys(pkg.dependencies || {}),
-    ...Object.keys(pkg.devDependencies || {}),
-    'react',
-    'react-dom',
-  ],
+  external: ['react', 'react-dom'],
   plugins: [
     multiInput(),
     postcss({ plugins: [postcssImport(), autoprefixer()], minimize: true }),
@@ -86,7 +84,17 @@ export default [
         format: 'esm',
         sourcemap: 'inline',
         banner,
-        plugins: [terser()],
+        plugins: [
+          terser(),
+          serve({
+            verbose: true,
+            contentBase: '',
+            historyApiFallback: false,
+            host: 'localhost',
+            port: 3008,
+          }),
+          livereload('dist'),
+        ],
       },
     ],
     ...pluginsSetups(bundles.browser),

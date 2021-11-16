@@ -39,7 +39,9 @@ const ScoutBarStem = ({
   >(<></>);
 
   const [cursor, setCursor] = useState<number>(0);
-  const [hovered, setHovered] = useState<HTMLElement | undefined>(undefined);
+  const [hovered, setHovered] = useState<HTMLElement | undefined | null>(
+    undefined
+  );
   const [recentSearch, removeRecent] = useLocalStorage(
     'scoutbar:recent-search',
     []
@@ -58,6 +60,14 @@ const ScoutBarStem = ({
   const isMobile = window?.matchMedia(
     'only screen and (max-width: 768px)'
   )?.matches;
+
+  const scrollStemSection = () => {
+    (ref?.current as unknown as HTMLElement).scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    });
+  };
 
   /**
    * Check if we are on mobile device and
@@ -144,6 +154,7 @@ const ScoutBarStem = ({
             setHovered={setHovered}
             active={cursor}
             allActions={allActions}
+            scrollStemSection={scrollStemSection}
           />
         );
 
@@ -228,10 +239,11 @@ const ScoutBarStem = ({
 
 const ScoutbarStemCell: React.FC<{
   item: IScoutAction | IScoutSectionAction;
-  setHovered: Function;
+  setHovered: (hover: HTMLElement | undefined | null) => void;
   active: number;
+  scrollStemSection: () => void;
   allActions: HTMLElement[];
-}> = memo(({ item, setHovered, active, allActions }) => {
+}> = memo(({ item, setHovered, active, allActions, scrollStemSection }) => {
   const isNewPage =
     item.type === 'scout-section-page' && item?.children?.length > 0;
   const { setCurrentSection } = useContext(ScoutBarContext);
@@ -240,10 +252,21 @@ const ScoutbarStemCell: React.FC<{
   const elementActive =
     allActions.indexOf(ref?.current as unknown as HTMLElement) === active;
 
+  const setSection = useCallback(
+    item => {
+      setCurrentSection?.(item);
+      /**
+       * Make sure sections starts from the top of the bar
+       */
+      scrollStemSection();
+    },
+    [scrollStemSection]
+  );
+
   const handleClick: React.MouseEventHandler<
     HTMLButtonElement | HTMLAnchorElement
   > = useCallback(e => {
-    if (isNewPage) return setCurrentSection?.(item);
+    if (isNewPage) return setSection(item);
 
     item.action?.call(e);
   }, []);
@@ -255,7 +278,7 @@ const ScoutbarStemCell: React.FC<{
      * Make the element active has a click event that matches expected behaviour
      */
 
-    if (isNewPage) return setCurrentSection?.(item);
+    if (isNewPage) return setSection(item);
     if (item.href && !item?.target) return window.location.assign(item?.href);
     if (item.href && item?.target) return window.open(item?.href, item?.target);
 
@@ -266,7 +289,9 @@ const ScoutbarStemCell: React.FC<{
     (item.type === 'scout-action' && item.keyboardShortcut) || [];
 
   if (keyboardShortcut.length > 0) {
-    useScoutShortcut([...keyboardShortcut], handleShortcutAction);
+    useScoutShortcut([...keyboardShortcut], handleShortcutAction, {
+      override: true,
+    });
   }
 
   const CommonElement = () => (
