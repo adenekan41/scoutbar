@@ -13,7 +13,7 @@
   transition: all 0.2s ease-in-out;
   min-height: 20px;
   max-height: var(--deduct-height);
-  overflow: overlay;
+  overflow: auto;
 
   scrollbar-width: thin;
   scrollbar-color: var(--scout-light-grey) transparent;
