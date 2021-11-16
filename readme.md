@@ -219,6 +219,34 @@ issue and pull request simultaneously.
 Please note we have a code of conduct, please follow it in all your interactions
 with the project.
 
+### Running Scoutbar Locally
+
+A local test environment has been setup for developers that wants to develop and
+contribute to scoutbar. to start up the dev server do the following
+
+```
+$ yarn install
+$ yarn run dev // server running on http://localhost:3008
+```
+
+### Linking Scoutbar Locally
+
+Run
+
+```
+$ npm link
+```
+
+This will create a symbolic link in the /usr/local/lib/node_modules/ folder,
+that contains the global npm packages in the system, the ones installed using
+npm -g.
+
+```
+npm link scoutbar
+```
+
+Then we run this in the project we want to link scoutbar locally to
+
 [See More on contributing](https://scoutbar.co/docs/contribute)
 
 ## 🤝 License
