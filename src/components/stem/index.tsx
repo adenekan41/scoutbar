@@ -202,7 +202,12 @@ const ScoutBarStem = ({
 
   return (
     <div
-      className={styles.scoutbarStem}
+      className={classNames([
+        styles.scoutbarStem,
+        isEmpty(actions) && (recentSearch.length === 0 || !showRecentSearch)
+          ? styles.emptyResults
+          : false,
+      ])}
       style={{ ['--scout-brand-primary' as string]: brandColor }}
       ref={ref}
     >
