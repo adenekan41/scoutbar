@@ -12,30 +12,15 @@
   </head>
   <body>
     <div class="text-center mt-5">
-      <svg
+      <img
+        src="https://i.ibb.co/xLHPc9W/Screenshot-2021-11-19-at-11-10-56-PM.png"
         width="70"
-        height="70"
-        viewBox="0 0 491 496"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <rect
-          y="0.876953"
-          width="490.58"
-          height="495.123"
-          rx="128.11"
-          fill="#20AC8B"
-        ></rect>
-        <path
-          d="M239.235 119.715C224.62 119.715 210.149 122.593 196.647 128.186C183.144 133.779 170.876 141.976 160.542 152.311C150.208 162.645 142.01 174.913 136.417 188.415C130.825 201.918 127.946 216.389 127.946 231.004C127.946 245.619 130.825 260.09 136.417 273.592C142.01 287.094 150.208 299.363 160.542 309.697C170.876 320.031 183.144 328.229 196.647 333.822C210.149 339.414 191.31 333.822 205.925 333.822C236.208 281.511 297.057 330.568 317.928 309.697C338.799 288.826 350.524 260.52 350.524 231.004C350.524 201.488 338.799 173.181 317.928 152.311C297.057 131.44 268.751 119.715 239.235 119.715ZM90.8496 231.004C90.853 207.389 96.4923 184.117 107.299 163.12C118.105 142.123 133.767 124.009 152.982 110.283C172.198 96.5563 194.411 87.6141 217.778 84.1993C241.144 80.7845 264.988 82.9958 287.327 90.6493C309.667 98.3029 329.858 111.178 346.221 128.204C362.584 145.23 374.648 165.915 381.409 188.541C388.17 211.167 389.433 235.08 385.094 258.292C380.754 281.504 370.938 303.346 356.459 322.001L419.282 384.824C422.661 388.322 424.53 393.007 424.488 397.871C424.446 402.734 422.495 407.386 419.056 410.825C415.617 414.264 410.965 416.215 406.102 416.257C401.238 416.299 396.553 414.43 393.055 411.051L330.232 348.228C308.298 365.257 282.026 375.79 254.403 378.628C226.78 381.467 198.915 376.497 173.976 364.285C149.037 352.073 128.026 333.107 113.33 309.546C98.6354 285.984 90.8465 258.772 90.8496 231.004Z"
-          fill="white"
-          fill-opacity="0.83"
-        ></path>
-      </svg>
+      />
 
       <h1 class="mt-4">Scoutbar Test</h1>
       <p>Click CMD + K to trigger search</p>
     </div>
+
     <div class="card card-body col-md-4 m-auto mt-5">
       <h4>PS!!</h4>
       <h6>
@@ -58,36 +43,6 @@
       }
     </script>
 
-    <script type="module">
-      import ReactDOM from 'react-dom';
-      import { ScoutBar } from './dist/scout-bar/index.js';
-      import React from 'react';
-
-      const root = document.querySelector('#app');
-
-      ReactDOM.render(
-        /*#__PURE__*/ React.createElement(ScoutBar, {
-          actions: scoutActions => {
-            /**
-             * Destructure scoutbar actions here
-             *
-             * e.g
-             * ...
-             * actions={({ createScoutAction,createScoutActionSection,createScoutActionSectionPage}) => [...]}
-             */
-
-            const { createScoutAction } = scoutActions;
-            return [
-              createScoutAction({
-                label: 'Get Started',
-                description: 'Get started with scoutbar',
-                href: '/',
-              }),
-            ];
-          },
-        }),
-        root
-      );
-    </script>
+    <script type="module" src="/dist/scout-bar/test.js"></script>
   </body>
 </html>
