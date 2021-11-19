@@ -181,6 +181,7 @@
       }
 
       svg {
+        display: inline-block;
         path {
           fill: var(--scout-white);
         }

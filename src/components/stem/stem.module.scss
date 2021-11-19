@@ -18,6 +18,12 @@
   scrollbar-width: thin;
   scrollbar-color: var(--scout-light-grey) transparent;
 
+  &.emptyResults {
+    padding: 0px;
+    min-height: 0;
+    border-top: 0px solid transparent;
+  }
+
   @include respond-below(sm) {
     max-height: calc(100% - 96px);
     min-height: 86vh;

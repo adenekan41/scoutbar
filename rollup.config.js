@@ -23,7 +23,11 @@ import pkg from './package.json';
 import defaultTsConfig from './tsconfig.json';
 
 const moduleName = pkg.name.replace(/^@.*\//, '');
-const inputFileName = ['src/**/*.ts', 'src/**/*.tsx'];
+const inputFileName = [
+  'src/**/*.ts',
+  process.env.NODE_ENV === 'prod' ? 'src/!(test.tsx)/**/*.tsx' : 'src/**/*.tsx',
+];
+
 const author = pkg.author;
 
 const bundles = {
@@ -55,6 +59,11 @@ const pluginsSetups = bundle => ({
         emitDeclarationOnly: true,
         outDir: `${bundle}`,
         declarationDir: `${bundle}`,
+        exclude: [
+          'node_modules',
+          'dist',
+          process.env.NODE_ENV === 'prod' ? 'src/test.tsx' : '',
+        ],
       },
     }),
     babel({
@@ -84,17 +93,19 @@ export default [
         format: 'esm',
         sourcemap: 'inline',
         banner,
-        plugins: [
-          terser(),
-          serve({
-            verbose: true,
-            contentBase: '',
-            historyApiFallback: false,
-            host: 'localhost',
-            port: 3008,
-          }),
-          livereload('dist'),
-        ],
+        plugins:
+          process.env.NODE_ENV === 'prod'
+            ? [terser()]
+            : [
+                serve({
+                  verbose: true,
+                  contentBase: '',
+                  historyApiFallback: false,
+                  host: 'localhost',
+                  port: 3008,
+                }),
+                livereload('dist'),
+              ],
       },
     ],
     ...pluginsSetups(bundles.browser),
