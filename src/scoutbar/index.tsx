@@ -223,7 +223,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
       if (scoutbarOpen) handleClickOutside();
       else setScoutbarOpen(true);
     },
-    { universal: true, override: true }
+    { override: true }
   );
 
   useScoutShortcut(
@@ -231,7 +231,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
     () => {
       handleClickOutside();
     },
-    { universal: true }
+    { override: true, universal: true }
   );
 
   const handleClickOutside = () => {

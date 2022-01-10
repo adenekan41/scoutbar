@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------------- */
 /*                            External Dependencies                           */
 /* -------------------------------------------------------------------------- */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 /* -------------------------- Internal Dependencies ------------------------- */
 import { ignoreStrokes } from 'utils';
@@ -28,11 +28,15 @@ interface IKeyMapping {
   [key: string]: boolean;
 }
 
-const disabledEventPropagation = (e: Event) => {
-  if (!e) return;
-
-  if (e.stopPropagation) e.stopPropagation();
-  if (window.event) window.event.cancelBubble = true;
+const disabledEventPropagation = (e: KeyboardEvent) => {
+  if (e) {
+    if (e.preventDefault) e.preventDefault();
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    } else if (window.event) {
+      window.event.cancelBubble = true;
+    }
+  }
 };
 
 const useScoutShortcut = (
@@ -45,9 +49,9 @@ const useScoutShortcut = (
       '⌨️ ScoutKey: the first Parameter must either be a `KeyboardEvent.key` or an Array of `KeyboardEvent.key`'
     );
 
-  const { override, universal = false } = options || {};
+  const { override, universal } = options || {};
 
-  const keyMapping = useCallback(
+  const keyMapping = useMemo(
     () =>
       targetKeys.reduce((currentKeys: IKeyMapping, key) => {
         currentKeys[key.toLowerCase()] = false;
@@ -64,48 +68,54 @@ const useScoutShortcut = (
 
   const downHandler = useCallback(
     (currentKey: string) =>
-      (event: KeyboardEvent): void => {
+      (event: KeyboardEvent): void | boolean => {
         const key: string = currentKey.toLowerCase();
 
-        /** Check If the key is already pressed, do nothing */
+        // /** Check If the key is already pressed, do nothing */
         if (event.repeat) return;
 
-        /** Check if the key is in the list of keys to listen for, do nothing */
-        if (key !== event.key.toLowerCase()) return;
-        if (ignoreStrokes((event.target as HTMLElement).tagName) && !universal)
+        /** Check if the key is in the list of keys to listen for, do nothing
+         * refer: https://github.com/adenekan41/scoutbar/blob/faf2df3a6dbbfdcd54bd003c1cd011b0187f3117/src/utils/index.ts#L1
+         */
+        if (!universal && ignoreStrokes((event.target as HTMLElement).tagName))
           return;
 
+        if (key !== event.key.toLowerCase()) return;
+        if (keyMaps[key] === undefined) return;
+
         if (override) {
-          event.preventDefault();
           disabledEventPropagation(event);
         }
 
         setKeyMaps(prev => ({ ...prev, [key]: true }));
       },
-    [override, universal]
+    [keyMaps, override, universal]
   );
 
   const upHandler = useCallback(
     (currentKey: string) =>
-      (event: KeyboardEvent): void => {
+      (event: KeyboardEvent): void | boolean => {
         const key: string = currentKey.toLowerCase();
 
         /** Check If the key is already pressed, do nothing */
         if (event.repeat) return;
 
-        /** Check if the key is in the list of keys to listen for, do nothing */
-        if (key !== event.key.toLowerCase()) return;
-        if (ignoreStrokes((event.target as HTMLElement).tagName) && !universal)
+        /** Check if the key is in the list of keys to listen for, do nothing
+         * refer: https://github.com/adenekan41/scoutbar/blob/faf2df3a6dbbfdcd54bd003c1cd011b0187f3117/src/utils/index.ts#L1
+         */
+        if (!universal && ignoreStrokes((event.target as HTMLElement).tagName))
           return;
 
+        if (key !== event.key.toLowerCase()) return;
+        if (keyMaps[key] === undefined) return;
+
         if (override) {
-          event.preventDefault();
           disabledEventPropagation(event);
         }
 
         setKeyMaps(prev => ({ ...prev, [key]: false }));
       },
-    [override, universal]
+    [keyMaps, override, universal]
   );
 
   useEffect(() => {
@@ -113,7 +123,7 @@ const useScoutShortcut = (
       callback(keyMaps);
       setKeyMaps(keyMapping);
     }
-  }, [callback, keyMaps, keyHandlers, keyMapping]);
+  }, [callback, keyMaps, keyHandlers]);
 
   useEffect(() => {
     targetKeys.forEach(key => {
@@ -126,7 +136,6 @@ const useScoutShortcut = (
         window.removeEventListener('keydown', downHandler(key));
         window.removeEventListener('keyup', upHandler(key));
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };
 
