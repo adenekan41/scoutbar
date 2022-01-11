@@ -1,7 +1,14 @@
 /* -------------------------------------------------------------------------- */
 /*                            External Dependencies                           */
 /* -------------------------------------------------------------------------- */
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+  useLayoutEffect,
+} from 'react';
 
 /* -------------------------- Internal Dependencies ------------------------- */
 import { ignoreStrokes } from 'utils';
@@ -50,6 +57,7 @@ const useScoutShortcut = (
     );
 
   const { override, universal } = options || {};
+  const callbackRef = useRef(callback);
 
   const keyMapping = useMemo(
     () =>
@@ -101,7 +109,7 @@ const useScoutShortcut = (
         if (event.repeat) return;
 
         /** Check if the key is in the list of keys to listen for, do nothing
-         * refer: https://github.com/adenekan41/scoutbar/blob/faf2df3a6dbbfdcd54bd003c1cd011b0187f3117/src/utils/index.ts#L1
+         * @see: https://github.com/adenekan41/scoutbar/blob/faf2df3a6dbbfdcd54bd003c1cd011b0187f3117/src/utils/index.ts#L1
          */
         if (!universal && ignoreStrokes((event.target as HTMLElement).tagName))
           return;
@@ -118,12 +126,19 @@ const useScoutShortcut = (
     [keyMaps, override, universal]
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    /** We don want tpo have the callback argument of the hook in the useEffect dependency array.
+     * We can't guarantee that the hook user wrapped this function in a useCallback so we don't
+     * want it to trigger the useEffect unnecessarily
+     * @see: https://epicreact.dev/the-latest-ref-pattern-in-react/
+     */
+
+    callbackRef.current = callback;
     if (!keyHandlers) {
-      callback(keyMaps);
+      callbackRef.current(keyMaps);
       setKeyMaps(keyMapping);
     }
-  }, [callback, keyMaps, keyHandlers]);
+  }, [keyMaps, keyHandlers]);
 
   useEffect(() => {
     targetKeys.forEach(key => {
