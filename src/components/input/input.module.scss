@@ -42,17 +42,6 @@
     height: auto;
     position: relative;
 
-    label {
-      font-family: inherit;
-      font-size: inherit;
-      font-weight: 400;
-      color: var(--scout-theme-grey);
-
-      span {
-        animation: fadeIn 1.5s ease;
-      }
-    }
-
     input {
       padding: 18px 10px;
       border: none;
@@ -75,40 +64,6 @@
       &:focus {
         outline: none;
       }
-    }
-
-    input:not(:placeholder-shown) + label,
-    input:focus + label {
-      display: none;
-      cursor: pointer;
-    }
-
-    input:placeholder-shown + label {
-      cursor: text;
-      display: block;
-      width: 98%;
-      font-size: inherit;
-      white-space: nowrap;
-      margin-bottom: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-left: 10px;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-
-    ::-webkit-input-placeholder {
-      opacity: 0;
-      transition: inherit;
-    }
-
-    input:focus::-webkit-input-placeholder {
-      opacity: 1;
-    }
-
-    input:focus + label {
-      display: none;
     }
   }
 
