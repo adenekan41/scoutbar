@@ -1,20 +1,20 @@
 /* -------------------------------------------------------------------------- */
 /*                            External Dependencies                           */
 /* -------------------------------------------------------------------------- */
-import { RefObject, useEffect } from 'react';
+import { MutableRefObject, useEffect } from 'react';
 
 type AnyEvent = MouseEvent | TouchEvent;
 
-const useOnClickOutside = (
-  ref: RefObject<HTMLElement>,
+const useOnClickOutside = <T>(
+  ref: MutableRefObject<T> | null,
   handler: (event: AnyEvent) => void
 ): void => {
   useEffect(() => {
     const listener = (event: AnyEvent) => {
-      const el = ref?.current;
+      const el: any = ref?.current;
 
       // Do nothing if clicking ref's element or descendent elements
-      if (!el || el.contains(event.target as Node)) {
+      if (!el || el?.contains(event.target as Node)) {
         return;
       }
 
