@@ -222,7 +222,7 @@ const ScoutbarStemCell: React.FC<{
       });
     }
 
-    const CellCommonElement = () => (
+    const ScoutbarStemCellChild = () => (
       <>
         {typeof item.icon === 'string' ? (
           <img src={item.icon} alt={item?.label || ''} aria-hidden="true" />
@@ -281,7 +281,7 @@ const ScoutbarStemCell: React.FC<{
             target={item?.target}
             rel={item?.rel}
           >
-            <CellCommonElement />
+            <ScoutbarStemCellChild />
           </a>
         ) : (
           <button
@@ -290,7 +290,7 @@ const ScoutbarStemCell: React.FC<{
             disabled={!item.action && item.type === 'scout-action'}
             aria-hidden={!item.action && item.type === 'scout-action'}
           >
-            <CellCommonElement />
+            <ScoutbarStemCellChild />
           </button>
         )}
       </>
