@@ -82,18 +82,18 @@ const useScoutShortcut = (
       // /** Check If the key is already pressed, do nothing */
       if (event.repeat) return;
 
-      if (override) {
-        disabledEventPropagation(event);
-      }
-
       /** Check if the key is in the list of keys to listen for, do nothing
        * @see: https://github.com/adenekan41/scoutbar/blob/faf2df3a6dbbfdcd54bd003c1cd011b0187f3117/src/utils/index.ts#L1
        */
-      if (!universal && ignoreStrokes((event.target as HTMLElement).tagName))
-        return;
 
       if (key !== event.key.toLowerCase()) return;
+      if (!universal && ignoreStrokes((event.target as HTMLElement).tagName))
+        return;
       if (keyMaps[key] === undefined) return;
+
+      if (override) {
+        disabledEventPropagation(event);
+      }
 
       setKeyMaps(prev => ({
         ...prev,
