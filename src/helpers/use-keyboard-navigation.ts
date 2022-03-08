@@ -47,12 +47,10 @@ const useKeybaordNavigation = (
   useLayoutEffect(() => {
     // Get original body overflow
     const originalStyle = window.getComputedStyle(document.body).overflow;
-
     if (upPress || downPress || isMobile) {
       // Prevent scrolling on mount or deps check
       document.body.style.overflow = 'hidden';
     }
-
     return () => {
       // Re-enable scrolling when component unmounts
       document.body.style.overflow = originalStyle;
@@ -119,13 +117,12 @@ const useKeybaordNavigation = (
 
   useEffect(() => {
     const removeEvent = () => {
-      allCellElements.forEach(element => {
-        element.classList.remove('no-pointer-events');
-      });
+      allCellElements.forEach(element =>
+        element.classList.remove('no-pointer-events')
+      );
     };
 
     ref?.current?.addEventListener('mousemove', removeEvent);
-
     return () => {
       ref?.current?.removeEventListener('mousemove', removeEvent);
     };
