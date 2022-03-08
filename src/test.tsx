@@ -15,14 +15,31 @@ const root = document.querySelector('#app');
 
 ReactDOM.render(
   <ScoutBar
-    actions={({ createScoutAction }) => [
+    actions={({ createScoutAction, createScoutPage }) => [
       createScoutAction({
         label: 'Get Started',
         description: 'Get started with scoutbar',
         href: '/',
       }),
+      createScoutAction({
+        label: 'Hello There',
+        href: '/',
+      }),
+
+      createScoutPage({
+        label: 'More Pages',
+        children: [
+          createScoutAction({
+            label: 'Page One',
+            action: () => alert('Page One'),
+          }),
+          createScoutAction({
+            label: 'Page Two',
+            action: () => alert('Page Two'),
+          }),
+        ],
+      }),
     ]}
-    noResultsOnEmptySearch
   />,
   root
 );
