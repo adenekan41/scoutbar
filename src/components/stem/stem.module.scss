@@ -6,14 +6,14 @@
 
 .scoutbarStem {
   --default-focus: #898989;
-  --deduct-height: 600px;
+  --deduct-height: 50vh;
 
   border-top: 1px solid var(--scout-light-grey);
   padding: 10px;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in;
   min-height: 20px;
   max-height: var(--deduct-height);
-  overflow: auto;
+  overflow-y: auto;
 
   scrollbar-width: thin;
   scrollbar-color: var(--scout-light-grey) transparent;
@@ -167,7 +167,7 @@
     box-sizing: border-box;
     cursor: pointer;
     border: 1px solid transparent;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.1s ease;
     will-change: border-color;
     align-items: center;
     text-decoration: none;
@@ -177,6 +177,15 @@
     color: var(--scout-theme-black);
     position: relative;
     animation: slideInLeft 0.2s ease-in-out;
+
+    &:global(.no-pointer-events) {
+      background: transparent !important;
+      pointer-events: none;
+      p .shortcut,
+      .newPageIcon {
+        visibility: hidden;
+      }
+    }
 
     svg,
     img {
@@ -258,7 +267,6 @@
       cursor: not-allowed;
     }
 
-    &:hover,
     &:focus,
     &.active {
       background: var(--scout-theme-card-hover);

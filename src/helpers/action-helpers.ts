@@ -44,3 +44,4 @@ export const createScoutPage = (
 };
 
 export type IScoutStems = Array<IScoutAction | IScoutSectionAction>;
+export type IScoutStem = IScoutSectionAction | IScoutAction;

@@ -17,7 +17,7 @@ import { ignoreStrokes } from 'utils';
  * Returns true if the key is pressed
  *
  * @remarks
- * This is a custom hook that can be used to detect a key press.
+ * This is a custom hook that can be used to detect an array keys pressed.
  *
  * @param targeKey - The key to check for
  * @param callback - The callback to call when the key is pressed
@@ -48,7 +48,7 @@ const disabledEventPropagation = (e: KeyboardEvent) => {
 
 const useScoutShortcut = (
   targetKeys: Array<string>,
-  callback: Function,
+  callback: (key: any) => void,
   options?: IScoutKeyOptions
 ) => {
   if (targetKeys.length === 0 || !Array.isArray(targetKeys))
@@ -56,22 +56,51 @@ const useScoutShortcut = (
       '⌨️ ScoutKey: the first Parameter must either be a `KeyboardEvent.key` or an Array of `KeyboardEvent.key`'
     );
 
-  const { override, universal } = options || {};
-  const callbackRef = useRef(callback);
+  const { override = false, universal = false } = options || {};
+  const callbackRef = useRef<(key: IKeyMapping) => void>(callback);
+
+  const targetKeysId = useMemo(() => targetKeys.join(), [targetKeys]);
 
   const keyMapping = useMemo(
     () =>
-      targetKeys.reduce((currentKeys: IKeyMapping, key) => {
+      [...new Set(targetKeys)].reduce((currentKeys: IKeyMapping, key) => {
         currentKeys[key.toLowerCase()] = false;
         return currentKeys;
       }, {}),
-    [targetKeys]
+    [targetKeysId]
   );
 
   const [keyMaps, setKeyMaps] = useState<IKeyMapping>(keyMapping);
 
-  const keyHandlers = Boolean(
-    Object.values(keyMaps).filter(value => !value).length
+  const keyHandlers = useMemo(
+    () => Boolean(Object.values(keyMaps).filter(value => !value).length),
+    [keyMaps]
+  );
+
+  const handler = useCallback(
+    (event: KeyboardEvent, key: string, position) => {
+      // /** Check If the key is already pressed, do nothing */
+      if (event.repeat) return;
+
+      /** Check if the key is in the list of keys to listen for, do nothing
+       * @see: https://github.com/adenekan41/scoutbar/blob/faf2df3a6dbbfdcd54bd003c1cd011b0187f3117/src/utils/index.ts#L1
+       */
+
+      if (key !== event.key.toLowerCase()) return;
+      if (!universal && ignoreStrokes((event.target as HTMLElement).tagName))
+        return;
+      if (keyMaps[key] === undefined) return;
+
+      if (override) {
+        disabledEventPropagation(event);
+      }
+
+      setKeyMaps(prev => ({
+        ...prev,
+        [key]: position === 'down' ? true : false,
+      }));
+    },
+    [keyMaps, override, universal]
   );
 
   const downHandler = useCallback(
@@ -79,25 +108,9 @@ const useScoutShortcut = (
       (event: KeyboardEvent): void | boolean => {
         const key: string = currentKey.toLowerCase();
 
-        // /** Check If the key is already pressed, do nothing */
-        if (event.repeat) return;
-
-        /** Check if the key is in the list of keys to listen for, do nothing
-         * refer: https://github.com/adenekan41/scoutbar/blob/faf2df3a6dbbfdcd54bd003c1cd011b0187f3117/src/utils/index.ts#L1
-         */
-        if (!universal && ignoreStrokes((event.target as HTMLElement).tagName))
-          return;
-
-        if (key !== event.key.toLowerCase()) return;
-        if (keyMaps[key] === undefined) return;
-
-        if (override) {
-          disabledEventPropagation(event);
-        }
-
-        setKeyMaps(prev => ({ ...prev, [key]: true }));
+        handler(event, key, 'down');
       },
-    [keyMaps, override, universal]
+    [handler]
   );
 
   const upHandler = useCallback(
@@ -105,25 +118,9 @@ const useScoutShortcut = (
       (event: KeyboardEvent): void | boolean => {
         const key: string = currentKey.toLowerCase();
 
-        /** Check If the key is already pressed, do nothing */
-        if (event.repeat) return;
-
-        /** Check if the key is in the list of keys to listen for, do nothing
-         * @see: https://github.com/adenekan41/scoutbar/blob/faf2df3a6dbbfdcd54bd003c1cd011b0187f3117/src/utils/index.ts#L1
-         */
-        if (!universal && ignoreStrokes((event.target as HTMLElement).tagName))
-          return;
-
-        if (key !== event.key.toLowerCase()) return;
-        if (keyMaps[key] === undefined) return;
-
-        if (override) {
-          disabledEventPropagation(event);
-        }
-
-        setKeyMaps(prev => ({ ...prev, [key]: false }));
+        handler(event, key, 'up');
       },
-    [keyMaps, override, universal]
+    [handler]
   );
 
   useLayoutEffect(() => {

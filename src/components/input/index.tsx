@@ -5,6 +5,7 @@ import React, {
   Fragment,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -34,10 +35,14 @@ const ScoutbarInput: React.FC<IScoutBar> = ({
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   // Initialize the placeholder
-  const initialPlaceholder =
-    placeholder && Array.isArray(placeholder)
-      ? placeholder[0]
-      : placeholder || 'What would you like to do today ?';
+  const initialPlaceholder = useMemo(
+    () =>
+      placeholder && Array.isArray(placeholder)
+        ? placeholder[0]
+        : placeholder || 'What would you like to do today ?',
+    [placeholder]
+  );
+  const words = useMemo(() => placeholder, [placeholder]);
   /**
    * Check if esc key is pressed
    */
@@ -60,14 +65,11 @@ const ScoutbarInput: React.FC<IScoutBar> = ({
     // Auto focus on input
     inputRef.current?.focus();
 
-    const words = placeholder;
-
     // Function that executes every 2000 milliseconds
     if (words && Array.isArray(words)) {
       const interval = setInterval(function () {
         setInputPlaceholder(prev => ({
           ...prev,
-
           word: words[prev.currentIndex],
           currentIndex:
             prev.currentIndex === words.length - 1 ? 0 : prev.currentIndex + 1,
@@ -122,7 +124,7 @@ const ScoutbarInput: React.FC<IScoutBar> = ({
         <input
           placeholder={
             isEmpty(currentSection)
-              ? initialPlaceholder
+              ? inputPlaceholder.word
               : 'Hit Backspace or Delete key to exit'
           }
           type="text"
@@ -133,7 +135,7 @@ const ScoutbarInput: React.FC<IScoutBar> = ({
           }}
           onBlur={e => {
             if (e.target.value.trim() && showRecentSearch) {
-              (setRecentSearch as Function)?.((prev: string[]) => {
+              setRecentSearch?.((prev: string[]) => {
                 const newRecentSearch = [e.target.value, ...prev].splice(0, 10);
                 return Array.from(new Set(newRecentSearch));
               });
@@ -142,18 +144,6 @@ const ScoutbarInput: React.FC<IScoutBar> = ({
           ref={inputRef}
           aria-describedby="scoutbar-placeholder"
         />
-
-        <label htmlFor="scoutbar" id="scoutbar-placeholder">
-          {Array.isArray(placeholder)
-            ? inputPlaceholder.word.split(' ').map((word, index) => {
-                return (
-                  <Fragment key={`${word}:${index}:${inputPlaceholder?.word}`}>
-                    <span>{word}</span>{' '}
-                  </Fragment>
-                );
-              })
-            : initialPlaceholder}
-        </label>
       </div>
       <button
         type="button"
