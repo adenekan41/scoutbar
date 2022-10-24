@@ -50,19 +50,16 @@ export interface ScoutBarProps {
    * @default 'light'
    */
   theme?: 'light' | 'dark' | 'auto';
-
   /**
    * Aknowledge the scout bar tutorial.
    * @default true
    */
   aknowledgement?: boolean;
-
   /**
    * Change scoutbar brand color.
    * @default '#000'
    */
   brandColor?: string;
-
   /**
    * Scoutbar placeholders
    */
@@ -115,6 +112,11 @@ export interface ScoutBarProps {
    */
   disableSnackbar?: boolean;
   /**
+   * Specifies whether or not an input field should have autocomplete enabled.
+   * @default 'off'
+   */
+  autocomplete?: 'on' | 'off';
+  /**
    * Set snackbar color and position
    */
   snackBar?: {
@@ -141,6 +143,7 @@ export const defaultProps: Partial<ScoutBarProps> = {
     'What do you need?',
     'Lets help you navigate',
   ],
+  autocomplete: 'off',
   bodyScroll: true,
   disableFocusTrap: false,
   centered: false,
@@ -175,6 +178,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   disableSnackbar,
   snackBar,
   revealScoutbar,
+  autocomplete,
 }) => {
   const [scoutbarOpen, setScoutbarOpen] = useState(revealScoutbar || false);
   const [inputValue, setInputValue] = useState('');
@@ -293,6 +297,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
                     <ScoutBarInput
                       placeholder={placeholder}
                       brandColor={brandColor}
+                      autocomplete={autocomplete}
                       closeScoutbar={() => handleClickOutside()}
                       showRecentSearch={showRecentSearch}
                     />
