@@ -32,6 +32,7 @@ const ScoutbarInput: React.FC<IScoutBar> = ({
   placeholder,
   showRecentSearch,
   closeScoutbar,
+  autocomplete,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   // Initialize the placeholder
@@ -142,6 +143,7 @@ const ScoutbarInput: React.FC<IScoutBar> = ({
             }
           }}
           ref={inputRef}
+          autoComplete={autocomplete}
           aria-describedby="scoutbar-placeholder"
         />
       </div>
