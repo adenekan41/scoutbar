@@ -4,7 +4,7 @@
 </p>
 <h2 align="center">ScoutBar</h2>
 
-<p align="center">⌨️ Spolight for your app</p>
+<p align="center">⌨️ Spotlight for your app</p>
 
 <br />
 <br />
@@ -90,7 +90,7 @@ instructions on how to use them, in the documentation.
 
 #### `Default -> true`
 
-Allows you the abilty to disable / hide scoutbar tutorial hints. i'e the section
+Allows you the ability to disable / hide scoutbar tutorial hints. i'e the section
 that tells users to navigate with the arrows or tabs. e.g
 
 ```jsx
@@ -123,7 +123,7 @@ requested that the system minimize the amount of non-essential motion it uses.
 
 #### `Default -> 'light'`
 
-Allows you to switch the theme of the scoutbar depeneding on how you want it.
+Allows you to switch the theme of the scoutbar depending on how you want it.
 auto switches to the theme of the current system.
 
 ```jsx
@@ -133,17 +133,17 @@ auto switches to the theme of the current system.
   />
 ```
 
-### aknowledgement
+### acknowledgement
 
 #### `Type -> Boolean`
 
 #### `Default -> true`
 
-Show the scoutbar aknowledgemnt logo on the top right of the input bar.
+Show the scoutbar acknowledgement logo on the top right of the input bar.
 
 ```jsx
   <ScoutBar
-   aknowledgement={true}
+   acknowledgement={true}
     ...
   />
 ```
@@ -154,7 +154,7 @@ Show the scoutbar aknowledgemnt logo on the top right of the input bar.
 
 #### `Default -> #000`
 
-Allows you to set the official scoutbar brand color. it helps to matcht the
+Allows you to set the official scoutbar brand color. it helps to match the
 color grade on your application
 
 ```jsx
@@ -196,7 +196,7 @@ Reveal the scoutbar with an external action. PS forcefully opens the scoutbar
 
 ```jsx
   <ScoutBar
-revealScoutbar={// youe state hook here }
+revealScoutbar={// your state hook here }
     ...
   />
 ```
