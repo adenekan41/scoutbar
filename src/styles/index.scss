@@ -141,7 +141,7 @@
     padding: 10px 20px;
     border-top: 1px solid var(--scout-light-grey);
 
-    .scout__bar-mobile-aknowledge {
+    .scout__bar-mobile-acknowledge {
       display: none;
 
       @include respond-below(sm) {
