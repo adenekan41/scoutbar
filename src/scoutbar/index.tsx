@@ -51,10 +51,10 @@ export interface ScoutBarProps {
    */
   theme?: 'light' | 'dark' | 'auto';
   /**
-   * Aknowledge the scout bar tutorial.
+   * Acknowledge the scout bar tutorial.
    * @default true
    */
-  aknowledgement?: boolean;
+  acknowledgement?: boolean;
   /**
    * Change scoutbar brand color.
    * @default '#000'
@@ -136,7 +136,7 @@ export const defaultProps: Partial<ScoutBarProps> = {
   tutorial: true,
   noAnimation: false,
   theme: 'light',
-  aknowledgement: true,
+  acknowledgement: true,
   brandColor: '#61bb65',
   placeholder: [
     'What would you like to do today ?',
@@ -163,7 +163,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   tutorial,
   noAnimation,
   theme,
-  aknowledgement,
+  acknowledgement,
   brandColor,
   placeholder,
   bodyScroll,
@@ -188,7 +188,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
 
   /**
    * Revise action data type if its a function to a an array
-   * We want to give user the ability to Item creation fucntions as a parameter in the props
+   * We want to give user the ability to Item creation functions as a parameter in the props
    *
    * e.g
    * ...
@@ -315,10 +315,10 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
                     {tutorial && (
                       <ScoutTutorial
                         brandColor={brandColor}
-                        aknowledgement={aknowledgement}
+                        acknowledgement={acknowledgement}
                       />
                     )}
-                    {aknowledgement && <ScoutBarLogo brandColor={brandColor} />}
+                    {acknowledgement && <ScoutBarLogo brandColor={brandColor} />}
                   </div>
                 </div>
               </main>
@@ -333,11 +333,11 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
 
 export const ScoutTutorial: React.FC<Partial<ScoutBarProps>> = ({
   brandColor,
-  aknowledgement,
+  acknowledgement,
 }) => (
   <div className="scout__bar-tutorial-section">
-    {aknowledgement && (
-      <div className="scout__bar-mobile-aknowledge">
+    {acknowledgement && (
+      <div className="scout__bar-mobile-acknowledge">
         <p>
           Powered by <ScoutBarLogo brandColor={brandColor} />
         </p>
