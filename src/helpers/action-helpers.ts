@@ -3,7 +3,7 @@ import React from 'react';
 import { guidGenerator } from 'utils';
 
 export interface ActionOptions {
-  close?: (val: boolean) => void;
+  close?: (val?: boolean) => void;
 }
 
 export interface IScoutAction {
