@@ -19,7 +19,8 @@ ReactDOM.render(
       createScoutAction({
         label: 'Get Started',
         description: 'Get started with scoutbar',
-        href: '/',
+        action: () => alert('Page Two'),
+        keyboardShortcut: ['control', 'g'],
       }),
       createScoutAction({
         label: 'Hello There',
