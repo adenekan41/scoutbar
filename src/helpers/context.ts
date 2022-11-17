@@ -10,6 +10,8 @@ interface IScoutContext {
   actions?: IScoutStems;
   setAction?: React.Dispatch<React.SetStateAction<IScoutStems>>;
   inputValue?: string;
+  setScoutbarReveal?: (value: boolean) => void;
+  scoutbarReveal?: boolean;
   setInputValue?: (value: string) => void;
   currentSection?: IScoutSectionAction | null;
   setCurrentSection?: (section: IScoutSectionAction | null) => void;
