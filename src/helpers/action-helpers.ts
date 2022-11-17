@@ -4,6 +4,7 @@ import { guidGenerator } from 'utils';
 
 export interface ActionOptions {
   close?: (val?: boolean) => void;
+  clearSearch?: () => void;
 }
 
 export interface IScoutAction {
