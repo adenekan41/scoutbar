@@ -23,7 +23,7 @@ import {
   useTrapFocus,
   useOnClickOutside,
 } from 'index';
-import { classNames, isBrowser } from 'utils';
+import { classNames, getOS, isBrowser } from 'utils';
 
 /* ---------------------------- Styles Dependency --------------------------- */
 import '../styles/index.scss';
@@ -180,8 +180,10 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   revealScoutbar,
   autocomplete,
 }) => {
-  const [scoutbarOpen, setScoutbarOpen] = useState(revealScoutbar || false);
   const [inputValue, setInputValue] = useState('');
+  const [scoutbarReveal, setScoutbarReveal] = useState(revealScoutbar || false);
+
+  const rootShortcut = getOS() === 'Mac' ? ['meta', 'k'] : ['ctrl', 'k'];
 
   const ref = useRef<HTMLDivElement>(null);
   const isMounted = useIsMounted();
@@ -205,28 +207,28 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
         });
   }, [actions]);
 
-  const socutbar___root = useRef<HTMLDivElement>(
+  const scoutbar___root = useRef<HTMLDivElement>(
     isBrowser() ? window.document.createElement('div') : null
   );
 
   useEffect(() => {
-    setScoutbarOpen(revealScoutbar || false);
+    setScoutbarReveal?.(revealScoutbar || false);
   }, [revealScoutbar]);
 
   useEffect(() => {
-    if (socutbar___root?.current) {
-      socutbar___root?.current?.setAttribute('id', 'scoutbar___root');
-      window.document.body.appendChild(socutbar___root?.current);
+    if (scoutbar___root?.current) {
+      scoutbar___root?.current?.setAttribute('id', 'scoutbar___root');
+      window.document.body.appendChild(scoutbar___root?.current);
     }
-  }, [socutbar___root.current]);
+  }, [scoutbar___root.current]);
 
   useScoutShortcut(
-    ['meta', 'k'],
+    rootShortcut,
     () => {
-      if (scoutbarOpen) handleClickOutside();
-      else setScoutbarOpen(!scoutbarOpen);
+      if (scoutbarReveal) handleClickOutside();
+      else setScoutbarReveal?.(!scoutbarReveal);
     },
-    { override: true }
+    { override: true, universal: true }
   );
 
   useScoutShortcut(
@@ -240,13 +242,13 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   const handleClickOutside = () => {
     ref?.current?.classList.add('scoutbar___hide');
     if (!persistInput) setInputValue?.('');
-    setTimeout(() => setScoutbarOpen(false), noAnimation ? 0 : 300);
+    setTimeout(() => setScoutbarReveal?.(false), noAnimation ? 0 : 300);
   };
 
   useOnClickOutside(disableClickOutside ? null : ref, handleClickOutside);
 
   useTrapFocus({
-    elementState: scoutbarOpen,
+    elementState: scoutbarReveal,
     bodyScroll,
     focusAbleElement: disableFocusTrap
       ? ''
@@ -254,24 +256,26 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
     disableFocusTrap,
   });
 
-  return isMounted() && socutbar___root.current ? (
+  return isMounted() && scoutbar___root.current ? (
     <>
       {createPortal(
         <>
           {!disableSnackbar
-            ? !scoutbarOpen && (
+            ? !scoutbarReveal && (
                 <ScoutSnackBar
-                  setController={setScoutbarOpen}
+                  setController={setScoutbarReveal}
                   brandColor={brandColor}
                   theme={theme}
                   snackBar={snackBar}
                 />
               )
             : null}
-          {scoutbarOpen && (
+          {scoutbarReveal && (
             <ScoutBarProvider
               actions={revisedAction}
               values={{
+                scoutbarReveal,
+                setScoutbarReveal,
                 inputValue,
                 setInputValue,
               }}
@@ -325,7 +329,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
             </ScoutBarProvider>
           )}
         </>,
-        socutbar___root.current
+        scoutbar___root.current
       )}{' '}
     </>
   ) : null;

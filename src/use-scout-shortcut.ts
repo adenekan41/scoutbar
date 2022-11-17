@@ -38,11 +38,12 @@ interface IKeyMapping {
 const disabledEventPropagation = (e: KeyboardEvent) => {
   if (e) {
     if (e.preventDefault) e.preventDefault();
-    if (e.stopPropagation) {
-      e.stopPropagation();
-    } else if (window.event) {
-      window.event.cancelBubble = true;
-    }
+    if (e.stopPropagation) e.stopPropagation();
+    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+    if (e.cancelBubble !== undefined) e.cancelBubble = true;
+    if (e.returnValue !== undefined) e.returnValue = false;
+    if (window.event) window.event.cancelBubble = true;
+    return false;
   }
 };
 
@@ -79,6 +80,9 @@ const useScoutShortcut = (
 
   const handler = useCallback(
     (event: KeyboardEvent, key: string, position) => {
+      const overrideKeyForOption =
+        !Object.keys(keyMaps).includes(event.key.toLowerCase()) &&
+        ignoreStrokes((event.target as HTMLElement).tagName);
       // /** Check If the key is already pressed, do nothing */
       if (event.repeat) return;
 
@@ -87,11 +91,14 @@ const useScoutShortcut = (
        */
 
       if (key !== event.key.toLowerCase()) return;
-      if (!universal && ignoreStrokes((event.target as HTMLElement).tagName))
-        return;
+
+      /** check if key pressed should be ignored */
+
       if (keyMaps[key] === undefined) return;
 
-      if (override) {
+      if (universal && overrideKeyForOption) return;
+
+      if (override && !ignoreStrokes((event.target as HTMLElement).tagName)) {
         disabledEventPropagation(event);
       }
 
@@ -131,6 +138,7 @@ const useScoutShortcut = (
      */
 
     callbackRef.current = callback;
+
     if (!keyHandlers) {
       callbackRef.current(keyMaps);
       setKeyMaps(keyMapping);
