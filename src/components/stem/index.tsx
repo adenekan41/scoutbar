@@ -172,7 +172,7 @@ const ScoutbarStemCell: React.FC<{
   ({ item, active, setHovered, allCellElements, scrollStemSection }) => {
     const isNewPage =
       item.type === 'scout-section-page' && item?.children?.length > 0;
-    const { setCurrentSection, setScoutbarReveal } =
+    const { setCurrentSection, setScoutbarReveal, setInputValue } =
       useContext(ScoutBarContext);
 
     const ref = useRef(null);
@@ -194,6 +194,7 @@ const ScoutbarStemCell: React.FC<{
 
     const options: ActionOptions = {
       close: (val = false) => setScoutbarReveal?.(val),
+      clearSearch: () => setInputValue?.(''),
       // ...
     };
 
