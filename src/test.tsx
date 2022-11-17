@@ -1,9 +1,9 @@
 /**
  * Scoutbar.js
  * @remarks
- * This test enviroment uses
+ * This test environment uses
  *  https://caniuse.com/import-maps so make sure you are on
- *  an enviroment that supports this
+ *  an environment that supports this
  * @author adenekan41
  */
 
@@ -31,7 +31,7 @@ ReactDOM.render(
         children: [
           createScoutAction({
             label: 'Page One',
-            action: () => alert('Page One'),
+            action: (e, { close }) => close?.(false),
           }),
           createScoutAction({
             label: 'Page Two',
