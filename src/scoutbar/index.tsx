@@ -183,7 +183,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   const [inputValue, setInputValue] = useState('');
   const [scoutbarReveal, setScoutbarReveal] = useState(revealScoutbar || false);
 
-  const rootShortcut = getOS() === 'Mac' ? ['meta', 'k'] : ['ctrl', 'k'];
+  const rootShortcut = getOS() === 'Mac' ? ['meta', 'k'] : ['control', 'k'];
 
   const ref = useRef<HTMLDivElement>(null);
   const isMounted = useIsMounted();
@@ -322,7 +322,9 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
                         acknowledgement={acknowledgement}
                       />
                     )}
-                    {acknowledgement && <ScoutBarLogo brandColor={brandColor} />}
+                    {acknowledgement && (
+                      <ScoutBarLogo brandColor={brandColor} />
+                    )}
                   </div>
                 </div>
               </main>
