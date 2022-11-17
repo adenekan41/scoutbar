@@ -26,6 +26,8 @@ import { ignoreStrokes } from 'utils';
  * @returns True if the key is pressed
  */
 
+const ROOT_KEY_MAPS = ['meta', 'k', 'control'];
+
 interface IScoutKeyOptions {
   override?: boolean;
   universal?: boolean;
@@ -39,7 +41,6 @@ const disabledEventPropagation = (e: KeyboardEvent) => {
   if (e) {
     if (e.preventDefault) e.preventDefault();
     if (e.stopPropagation) e.stopPropagation();
-    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
     if (e.cancelBubble !== undefined) e.cancelBubble = true;
     if (e.returnValue !== undefined) e.returnValue = false;
     if (window.event) window.event.cancelBubble = true;
@@ -81,9 +82,9 @@ const useScoutShortcut = (
   const handler = useCallback(
     (event: KeyboardEvent, key: string, position) => {
       const overrideKeyForOption =
-        !Object.keys(keyMaps).includes(event.key.toLowerCase()) &&
+        !ROOT_KEY_MAPS.includes(event.key.toLowerCase()) &&
         ignoreStrokes((event.target as HTMLElement).tagName);
-      // /** Check If the key is already pressed, do nothing */
+      /** Check If the key is already pressed, do nothing */
       if (event.repeat) return;
 
       /** Check if the key is in the list of keys to listen for, do nothing
@@ -96,7 +97,7 @@ const useScoutShortcut = (
 
       if (keyMaps[key] === undefined) return;
 
-      if (universal && overrideKeyForOption) return;
+      if (!universal && overrideKeyForOption) return;
 
       if (override && !ignoreStrokes((event.target as HTMLElement).tagName)) {
         disabledEventPropagation(event);
