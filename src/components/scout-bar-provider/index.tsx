@@ -10,6 +10,8 @@ import scoutSearch from 'helpers/scout-search';
 
 interface ScoutBarProviderProps extends Partial<ScoutBarProps> {
   values?: {
+    scoutbarReveal?: boolean;
+    setScoutbarReveal?: (value: boolean) => void;
     inputValue?: string;
     setInputValue?: (value: string) => void;
   };
@@ -21,11 +23,13 @@ const ScoutBarProvider: React.FC<ScoutBarProviderProps> = ({
   values,
 }) => {
   const [section, setSection] = useState<IScoutSectionAction | null>(null);
-  const { inputValue, setInputValue } = values || {};
+
+  const { inputValue, setInputValue, scoutbarReveal, setScoutbarReveal } =
+    values || {};
 
   /**
    * Revise action data type if its a function to a an array
-   * We want to give user the ability to Item creation fucntions as a parameter in the props
+   * We want to give user the ability to Item creation functions as a parameter in the props
    *
    * e.g
    * ...
@@ -55,6 +59,8 @@ const ScoutBarProvider: React.FC<ScoutBarProviderProps> = ({
         actions: currentAction,
         setAction,
         inputValue,
+        setScoutbarReveal,
+        scoutbarReveal,
         setInputValue: async (value: string) => {
           await setInputValue?.(value);
           searchItem(value);
