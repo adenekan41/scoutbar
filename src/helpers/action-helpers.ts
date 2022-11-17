@@ -1,12 +1,20 @@
 /* --------------------------- Internal Dependency -------------------------- */
+import React from 'react';
 import { guidGenerator } from 'utils';
+
+export interface ActionOptions {
+  close?: (val: boolean) => void;
+}
 
 export interface IScoutAction {
   id?: string;
   label: string;
   type?: 'scout-action';
   href?: string;
-  action?: () => void;
+  action?: (
+    e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>,
+    options: ActionOptions
+  ) => void;
   target?: string;
   rel?: string;
   keyboardShortcut?: string[];
