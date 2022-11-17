@@ -1,7 +1,7 @@
 {
   "name": "scoutbar",
   "license": "MIT",
-  "version": "1.1.11",
+  "version": "1.2.0",
   "repository": "git://github.com/adenekan41/scoutbar.git",
   "description": "ScoutBar is a JavaScript library for developing user friendly, easy-to-use, scalable and highly customizable component for automating your navigation experience",
   "author": "Adenekan Wonderful <hellocodewonders@gmail.com> (https://codewonders.dev)",
