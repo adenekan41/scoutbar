@@ -14,6 +14,7 @@ import React, {
 
 /* -------------------------- Internal Dependencies ------------------------- */
 import { classNames, isEmpty } from 'utils';
+import { ActionOptions } from 'index';
 import ScoutBarContext from 'helpers/context';
 import {
   IScoutAction,
@@ -21,7 +22,7 @@ import {
   ScoutBarProps,
   useScoutShortcut,
   useLocalStorage,
-  useKeybaordNavigation,
+  useKeyboardNavigation,
   IScoutStems,
   IScoutStem,
 } from 'index';
@@ -45,7 +46,7 @@ const ScoutBarStem = ({
     []
   );
   const ref = useRef<HTMLDivElement | null>(null);
-  const [cursor, setHovered, allCellElements] = useKeybaordNavigation(ref);
+  const [cursor, setHovered, allCellElements] = useKeyboardNavigation(ref);
 
   const { currentSection, setInputValue } = useContext(ScoutBarContext);
 
@@ -171,7 +172,8 @@ const ScoutbarStemCell: React.FC<{
   ({ item, active, setHovered, allCellElements, scrollStemSection }) => {
     const isNewPage =
       item.type === 'scout-section-page' && item?.children?.length > 0;
-    const { setCurrentSection } = useContext(ScoutBarContext);
+    const { setCurrentSection, setScoutbarReveal } =
+      useContext(ScoutBarContext);
 
     const ref = useRef(null);
     const elementActive =
@@ -190,19 +192,25 @@ const ScoutbarStemCell: React.FC<{
       [scrollStemSection]
     );
 
-    const handleClick: React.MouseEventHandler<
-      HTMLButtonElement | HTMLAnchorElement
-    > = useCallback(e => {
-      if (isNewPage) return setSection(item);
+    const options: ActionOptions = {
+      close: setScoutbarReveal,
+      // ...
+    };
 
-      item.action?.call(e);
-    }, []);
+    const handleClick = useCallback(
+      (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+        if (isNewPage) return setSection(item);
+
+        item.action?.call(null, e, options);
+      },
+      []
+    );
 
     const handleShortcutAction: React.MouseEventHandler<
       HTMLButtonElement | HTMLAnchorElement
     > = useCallback(e => {
       /**
-       * Make the element active has a click event that matches expected behaviour
+       * Make the element active has a click event that matches expected behavior
        */
 
       if (isNewPage) return setSection(item);
@@ -210,7 +218,7 @@ const ScoutbarStemCell: React.FC<{
       if (item.href && item?.target)
         return window.open(item?.href, item?.target);
 
-      item.action?.call(e);
+      item.action?.call(null, e, options);
     }, []);
 
     const keyboardShortcut =

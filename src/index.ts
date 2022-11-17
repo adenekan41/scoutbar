@@ -19,7 +19,7 @@ export { default as ScoutBar } from './scoutbar';
  * but are exported and can be used by other applications.
  */
 export { default as useTrapFocus } from './helpers/use-trap-focus';
-export { default as useKeybaordNavigation } from './helpers/use-keyboard-navigation';
+export { default as useKeyboardNavigation } from './helpers/use-keyboard-navigation';
 export { default as useIsMounted } from './helpers/use-is-mounted';
 export { default as useLocalStorage } from './helpers/use-local-storage';
 export { default as useOnClickOutside } from './helpers/use-click-outside';
