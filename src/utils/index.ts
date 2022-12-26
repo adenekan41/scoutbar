@@ -71,3 +71,20 @@ export const getOS = () => {
 
   return os;
 };
+
+export const print = (
+  data: string,
+  type: 'error' | 'warn' = 'warn',
+  isSystemDefault = false
+) => {
+  const message = `%c[${type === 'error' ? '⛔️' : '⚠️'} Scoutbar]: ${data}`;
+  const options = `color: ${
+    type === 'error' ? '#eb1c1c' : '#ae832c'
+  }; font-weight: bold; background: #eaeaea; padding: 5px; border-radius: 5px; border: 2px solid ${
+    type === 'error' ? '#eb1c1c' : '#ae832c'
+  }; font-size: 13px; font-family: sans-serif;`;
+
+  if (isSystemDefault) return console[type](message, options);
+
+  return console.log(message, options);
+};
