@@ -140,8 +140,8 @@ const useScoutShortcut = (
 
     callbackRef.current = callback;
 
-    if (!keyHandlers) {
-      callbackRef.current(keyMaps);
+    if (!keyHandlers && typeof callbackRef.current === 'function') {
+      callbackRef?.current(keyMaps);
       setKeyMaps(keyMapping);
     }
   }, [keyMaps, keyHandlers]);
