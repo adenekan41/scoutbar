@@ -150,7 +150,7 @@ export const defaultProps: Partial<ScoutBarProps> = {
   theme: 'light',
   acknowledgement: true,
   brandColor: '#61bb65',
-  backdrop: '#ff00002d',
+  backdrop: null,
   placeholder: [
     'What would you like to do today ?',
     'What do you need?',

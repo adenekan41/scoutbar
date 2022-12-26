@@ -19,11 +19,9 @@
 
 ## ⚡️Overview
 
-Users enjoy hitting `CMD + K` to search and perform complex actions online on
-big projects like Slack, Workspace by Facebook, etc. Users with good knowledge
-of what they are looking for have been proven to be able to navigate apps more
-effectively by 21%. Introduce Scoutbar, an easy-to-install, portable, and
-extensible React component for automating your `command+k` experience.
+It has been observed that users who are familiar with the `CMD + K` shortcut for searching and performing complex actions within applications like Slack and Workspace by Facebook are able to navigate these apps more efficiently by 21%. This highlights the value of providing users with effective search and navigation tools.
+
+With this in mind, we are excited to introduce Scoutbar - an easy-to-install React component that automates the `CMD + K` experience. Scoutbar is portable and extensible, making it a convenient solution for improving the search and navigation capabilities of your application. Give your users the ability to quickly find what they are looking for and increase their productivity with Scoutbar.
 
 ## 🔧 Installation
 
@@ -41,17 +39,16 @@ $ npm install scoutbar
 
 ## ✨ Features
 
-- 😎 Easy to install
-- 📦 ~400b (gzipped)
-- 🙅‍♂️ Support for keyboard navigation
-  - Support for keyboard shortcuts for configuring specific actions
-- ✂️ Super-flexible API
-  - A simple data structure and function helper to help customize your
-    experience
-- ✅ Fully tested, typed and reliable
-- ⚒ CommonJS, ESM & browser standalone support
-- 👨🏽‍🔧 Handy and useful helpers
-- 👨🏽 Zero Dependencies
+- 🤘 Super easy to install
+- 📦 It's tiny, only 400b gzipped
+- 🙅‍♂️ It's got keyboard nav support
+  - And keyboard shortcuts to configure specific actions
+- 🔧 Flexible API
+  - A simple data structure and function helper to customize your experience
+- 💪 Fully tested, typed, and reliable
+- 🌍 Works in CommonJS, ESM, and the browser
+- 🤓 Handy helpers included
+- 🧑 Zero dependencies
 
 ## 📖 Usage
 
