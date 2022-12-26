@@ -6,18 +6,18 @@ import { useEffect } from 'react';
 interface ITrapFocus {
   elementState: boolean;
   bodyScroll?: boolean;
-  focusAbleElement?: string;
+  focusableElement?: string;
   disableFocusTrap?: boolean;
 }
 
 const useTrapFocus = ({
   elementState,
   bodyScroll = true,
-  focusAbleElement,
+  focusableElement,
   disableFocusTrap = false,
 }: ITrapFocus): void => {
   useEffect(() => {
-    const OUTER_SCOUTBAR_EL = focusAbleElement;
+    const OUTER_SCOUTBAR_EL = focusableElement;
     /**
      * All focusable elements to consider for the focusable interaction
      */
