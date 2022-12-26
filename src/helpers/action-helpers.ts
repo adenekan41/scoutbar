@@ -1,9 +1,8 @@
 /* --------------------------- Internal Dependency -------------------------- */
-import React from 'react';
 import { guidGenerator } from 'utils';
 
 export interface ActionOptions {
-  close?: (val?: boolean) => void;
+  close?: (value: boolean) => void;
   clearSearch?: () => void;
 }
 
@@ -19,6 +18,7 @@ export interface IScoutAction {
   target?: string;
   rel?: string;
   keyboardShortcut?: string[];
+  disableIdledAction?: boolean;
   icon?: HTMLElement | string;
   description?: string;
   ariaLabel?: string;

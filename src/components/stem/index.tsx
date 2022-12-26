@@ -193,7 +193,7 @@ const ScoutbarStemCell: React.FC<{
     );
 
     const options: ActionOptions = {
-      close: (val = false) => setScoutbarReveal?.(val),
+      close: setScoutbarReveal,
       clearSearch: () => setInputValue?.(''),
       // ...
     };
