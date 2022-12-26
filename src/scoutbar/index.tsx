@@ -1,15 +1,20 @@
 /* -------------------------------------------------------------------------- */
 /*                            External Dependencies                           */
 /* -------------------------------------------------------------------------- */
-import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { createPortal } from 'react-dom';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from 'react';
 
 /* -------------------------- Internal Dependencies ------------------------- */
 import ScoutBarInput from 'components/input';
 import ScoutSnackBar from 'components/snackbar';
 import ScoutBarStem from 'components/stem';
 import ScoutBarProvider from 'components/scout-bar-provider';
-
+import Portal from 'components/portal';
 import ScoutBarLogo from 'components/icon/svg/logo';
 
 import {
@@ -20,15 +25,15 @@ import {
   createScoutAction,
   createScoutSection,
   IScoutStems,
-  useIsMounted,
   useTrapFocus,
   useOnClickOutside,
 } from 'index';
-import { classNames, getOS, isBrowser } from 'utils';
+import { classNames, print } from 'utils';
 
 /* ---------------------------- Styles Dependency --------------------------- */
 import '../styles/index.scss';
-import { TutorialIcon } from 'components/icon/svg/tutorial';
+import ScoutTutorial from 'components/scout-tutorial';
+import { FOCUSABLE_ELEMENTS, ROOT_SHORTCUT } from 'utils/constants';
 
 export type ScoutActionCreators = (props: {
   createScoutAction: (action: IScoutAction) => IScoutAction;
@@ -52,6 +57,11 @@ export interface ScoutBarProps {
    * @default 'light'
    */
   theme?: 'light' | 'dark' | 'auto';
+  /**
+   * Backdrop color to use for the scout bar.
+   * @default null
+   */
+  backdrop?: string | null;
   /**
    * Acknowledge the scout bar tutorial.
    * @default true
@@ -140,6 +150,7 @@ export const defaultProps: Partial<ScoutBarProps> = {
   theme: 'light',
   acknowledgement: true,
   brandColor: '#61bb65',
+  backdrop: '#ff00002d',
   placeholder: [
     'What would you like to do today ?',
     'What do you need?',
@@ -178,6 +189,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   persistInput,
   disableClickOutside,
   disableSnackbar,
+  backdrop,
   snackBar,
   revealScoutbar,
   autocomplete,
@@ -185,10 +197,8 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   const [inputValue, setInputValue] = useState('');
   const [scoutbarReveal, setScoutbarReveal] = useState(revealScoutbar || false);
 
-  const rootShortcut = getOS() === 'Mac' ? ['meta', 'k'] : ['control', 'k'];
-
   const ref = useRef<HTMLDivElement>(null);
-  const isMounted = useIsMounted();
+  const backdropRef = useRef<HTMLDivElement>(null);
 
   /**
    * Revise action data type if its a function to a an array
@@ -196,9 +206,8 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
    *
    * e.g
    * ...
-   * actions={({ createScoutAction,createScoutActionSection,createScoutActionSectionPage}) => [...]}
+   * actions={({ createScoutAction, createScoutActionSection, createScoutActionSectionPage}) => [...]}
    */
-
   const revisedAction: IScoutStems = useMemo(() => {
     return Array.isArray(actions)
       ? actions
@@ -209,23 +218,12 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
         });
   }, [actions]);
 
-  const scoutbar___root = useRef<HTMLDivElement>(
-    isBrowser() ? window.document.createElement('div') : null
-  );
-
   useEffect(() => {
     setScoutbarReveal?.(revealScoutbar || false);
   }, [revealScoutbar]);
 
-  useEffect(() => {
-    if (scoutbar___root?.current) {
-      scoutbar___root?.current?.setAttribute('id', 'scoutbar___root');
-      window.document.body.appendChild(scoutbar___root?.current);
-    }
-  }, [scoutbar___root.current]);
-
   useScoutShortcut(
-    rootShortcut,
+    ROOT_SHORTCUT,
     () => {
       if (scoutbarReveal) handleClickOutside();
       else setScoutbarReveal?.(!scoutbarReveal);
@@ -241,8 +239,66 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
     { universal: true }
   );
 
+  const bootstrapShortcutActions = useCallback(() => {
+    const shortcuts: Array<{
+      key: string[];
+      action: (e: KeyboardEvent) => void;
+    }> = [];
+    const recursMap = (actions: IScoutStems) => {
+      [...actions]?.map(action => {
+        if (
+          (action.type === 'scout-section' ||
+            action.type === 'scout-section-page') &&
+          action?.children?.length
+        )
+          return recursMap(action?.children);
+
+        if (action.type === 'scout-action' && action?.keyboardShortcut) {
+          const isTampering =
+            action?.keyboardShortcut?.length &&
+            action?.keyboardShortcut?.filter(k => ROOT_SHORTCUT.includes(k));
+          if (action?.disableIdledAction) return;
+
+          if (isTampering)
+            if (
+              isTampering?.length >= 1 &&
+              action.keyboardShortcut.length === isTampering.length
+            )
+              return print(
+                `You are tampering with the Root shortcut either ${isTampering.toString()} in your action shortcut`
+              );
+
+          if (
+            shortcuts.find(
+              shortcut =>
+                shortcut.key.toString() === action?.keyboardShortcut?.toString()
+            )?.key
+          )
+            return print(
+              `Shortcut ${action?.keyboardShortcut} is already in use. Please use a different shortcut to have its action run in scout idle mode.`
+            );
+
+          return shortcuts.push({
+            key: action?.keyboardShortcut,
+            action: action?.action as unknown as (e: KeyboardEvent) => void,
+          });
+        }
+      });
+    };
+
+    recursMap(revisedAction);
+
+    return shortcuts;
+  }, [revisedAction, scoutbarReveal]);
+
+  bootstrapShortcutActions()?.forEach((shortcut: any) => {
+    useScoutShortcut(shortcut.key, !scoutbarReveal && shortcut.action);
+  });
+
   const handleClickOutside = () => {
     ref?.current?.classList.add('scoutbar___hide');
+    backdropRef?.current?.classList.add('scoutbar___hide-backdrop');
+
     if (!persistInput) setInputValue?.('');
     setTimeout(() => setScoutbarReveal?.(false), noAnimation ? 0 : 300);
   };
@@ -252,138 +308,93 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   useTrapFocus({
     elementState: scoutbarReveal,
     bodyScroll,
-    focusAbleElement: disableFocusTrap
-      ? ''
-      : 'body > div:not(#scoutbar___root)',
+    focusableElement: disableFocusTrap ? '' : FOCUSABLE_ELEMENTS,
     disableFocusTrap,
   });
 
-  return isMounted() && scoutbar___root.current ? (
-    <>
-      {createPortal(
-        <>
-          {!disableSnackbar
-            ? !scoutbarReveal && (
-                <ScoutSnackBar
-                  setController={setScoutbarReveal}
-                  brandColor={brandColor}
-                  theme={theme}
-                  snackBar={snackBar}
-                />
-              )
-            : null}
-          {scoutbarReveal && (
-            <ScoutBarProvider
-              actions={revisedAction}
-              values={{
-                scoutbarReveal,
-                setScoutbarReveal,
-                inputValue,
-                setInputValue,
+  return (
+    <Portal>
+      {!disableSnackbar
+        ? !scoutbarReveal && (
+            <ScoutSnackBar
+              setController={setScoutbarReveal}
+              brandColor={brandColor}
+              theme={theme}
+              snackBar={snackBar}
+            />
+          )
+        : null}
+      {scoutbarReveal && (
+        <ScoutBarProvider
+          actions={revisedAction}
+          values={{
+            scoutbarReveal,
+            setScoutbarReveal,
+            inputValue,
+            setInputValue,
+          }}
+        >
+          {backdrop && (
+            <div
+              className="scoutbar___backdrop"
+              ref={backdropRef}
+              style={{
+                ['--scoutbar-backdrop' as string]: backdrop,
+              }}
+            />
+          )}
+
+          <main className="___scout">
+            <div
+              className={classNames([
+                'scout__bar-container',
+                `${centered && 'scout__bar-wrapper-centered'}`,
+              ])}
+              ref={ref}
+              style={{
+                ['--scoutbar-width' as string]: barWidth,
               }}
             >
-              <main className="___scout">
-                <div
-                  className={classNames([
-                    'scout__bar-container',
-                    `${centered && 'scout__bar-wrapper-centered'}`,
-                  ])}
-                  ref={ref}
-                  style={{
-                    ['--scoutbar-width' as string]: barWidth,
-                  }}
-                >
-                  <div
-                    className={classNames([
-                      'scout__bar-wrapper',
-                      `${noAnimation && 'scout__bar-wrapper-no-animation'}`,
-                      `scout__bar-wrapper-theme-${theme}`,
-                    ])}
-                  >
-                    <ScoutBarInput
-                      placeholder={placeholder}
-                      brandColor={brandColor}
-                      autocomplete={autocomplete}
-                      closeScoutbar={() => handleClickOutside()}
-                      showRecentSearch={showRecentSearch}
-                    />
+              <div
+                className={classNames([
+                  'scout__bar-wrapper',
+                  `${noAnimation && 'scout__bar-wrapper-no-animation'}`,
+                  `scout__bar-wrapper-theme-${theme}`,
+                ])}
+              >
+                <ScoutBarInput
+                  placeholder={placeholder}
+                  brandColor={brandColor}
+                  autocomplete={autocomplete}
+                  closeScoutbar={() => handleClickOutside()}
+                  showRecentSearch={showRecentSearch}
+                />
 
-                    <ScoutBarStem
-                      actions={
-                        noResultsOnEmptySearch && inputValue?.trim() === ''
-                          ? []
-                          : revisedAction
-                      }
-                      brandColor={brandColor}
-                      showRecentSearch={showRecentSearch}
-                    />
+                <ScoutBarStem
+                  actions={
+                    noResultsOnEmptySearch && inputValue?.trim() === ''
+                      ? []
+                      : revisedAction
+                  }
+                  brandColor={brandColor}
+                  showRecentSearch={showRecentSearch}
+                />
 
-                    {tutorial && (
-                      <ScoutTutorial
-                        brandColor={brandColor}
-                        acknowledgement={acknowledgement}
-                      />
-                    )}
-                    {acknowledgement && (
-                      <ScoutBarLogo brandColor={brandColor} />
-                    )}
-                  </div>
-                </div>
-              </main>
-            </ScoutBarProvider>
-          )}
-        </>,
-        scoutbar___root.current
-      )}{' '}
-    </>
-  ) : null;
+                {tutorial && (
+                  <ScoutTutorial
+                    brandColor={brandColor}
+                    acknowledgement={acknowledgement}
+                  />
+                )}
+                {acknowledgement && <ScoutBarLogo brandColor={brandColor} />}
+              </div>
+            </div>
+          </main>
+        </ScoutBarProvider>
+      )}
+    </Portal>
+  );
 };
-
-export const ScoutTutorial: React.FC<Partial<ScoutBarProps>> = ({
-  brandColor,
-  acknowledgement,
-}) => (
-  <div className="scout__bar-tutorial-section">
-    {acknowledgement && (
-      <div className="scout__bar-mobile-acknowledge">
-        <p>
-          Powered by <ScoutBarLogo brandColor={brandColor} />
-        </p>
-      </div>
-    )}
-    <div className="scout__bar-tutorial-section-item">
-      <p>
-        <span>
-          <TutorialIcon.Tab />
-          TAB
-        </span>
-        or{' '}
-        <span className="scout__bar-tutorial-section-item__arrow m-left">
-          <TutorialIcon.Down />
-        </span>
-        <span className="scout__bar-tutorial-section-item__arrow">
-          <TutorialIcon.Up />
-        </span>
-        to navigate
-      </p>
-    </div>
-    <div className="scout__bar-tutorial-section-item">
-      <p>
-        <span>
-          <TutorialIcon.Return />
-          RETURN
-        </span>
-        to Select
-      </p>
-    </div>
-    <div className="scout__bar-tutorial-section-item">
-      <p>
-        <span>ESC</span>
-        to cancel
-      </p>
-    </div>
-  </div>
-);
 
 ScoutBar.defaultProps = defaultProps;
 
