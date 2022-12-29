@@ -1,3 +1,4 @@
+import React from 'react';
 /* --------------------------- Internal Dependency -------------------------- */
 import { guidGenerator } from 'utils';
 
@@ -19,7 +20,7 @@ export interface IScoutAction {
   rel?: string;
   keyboardShortcut?: string[];
   disableIdledAction?: boolean;
-  icon?: HTMLElement | string;
+  icon?: React.ReactElement | HTMLElement | string;
   description?: string;
   ariaLabel?: string;
 }
