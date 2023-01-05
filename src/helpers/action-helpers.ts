@@ -19,7 +19,7 @@ export interface IScoutAction {
   rel?: string;
   keyboardShortcut?: string[];
   disableIdledAction?: boolean;
-  icon?: HTMLElement | string;
+  icon?: React.ReactElement | HTMLElement | string;
   description?: string;
   ariaLabel?: string;
 }
