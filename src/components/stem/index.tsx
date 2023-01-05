@@ -326,7 +326,10 @@ const RecentSearch: React.FC<{
   removeRecentSearch: (search: string) => void;
   setInputValue?: (value: string) => void;
 }> = memo(({ recents: recentSearch, removeRecentSearch, setInputValue }) => {
+  const RECENT_SEARCH_NUMBER = 5;
+
   const [isShowMore, setIsShowMore] = useState(false);
+
   return (
     <>
       {!isEmpty(recentSearch) && (
@@ -334,7 +337,7 @@ const RecentSearch: React.FC<{
           <p className={styles.header}>Recent Search</p>
           <div className={styles.recentSearch}>
             {recentSearch
-              .slice(0, isShowMore ? recentSearch.length : 5)
+              .slice(0, isShowMore ? recentSearch.length : RECENT_SEARCH_NUMBER)
               ?.map((search, index) => (
                 <div className={styles.recentCell} key={`${search}:${index}`}>
                   <Icon
@@ -401,7 +404,8 @@ const RecentSearch: React.FC<{
                 >
                   {!isShowMore ? (
                     <>
-                      Show <b>{recentSearch.length - 5}</b> more...
+                      Show <b>{recentSearch.length - RECENT_SEARCH_NUMBER}</b>{' '}
+                      more...
                     </>
                   ) : (
                     <>Show less</>
