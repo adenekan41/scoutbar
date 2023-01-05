@@ -1,14 +1,19 @@
 import {
   Dispatch,
   SetStateAction,
-  useContext,
+  useCallback,
   useEffect,
   useLayoutEffect,
   useState,
 } from 'react';
 import useScoutKey from 'use-scout-key';
-import { isEmpty } from 'utils';
-import ScoutBarContext from 'helpers/context';
+
+/**
+ * Check if we are on mobile device and disable fetching all cells
+ */
+const isMobile = window?.matchMedia(
+  'only screen and (max-width: 768px)'
+)?.matches;
 
 type Cell = HTMLAnchorElement | HTMLButtonElement;
 
@@ -18,44 +23,44 @@ const useKeybaordNavigation = (
   const [cursor, setCursor] = useState<number>(-1);
   const [hovered, setHovered] = useState<Cell | undefined | null>(undefined);
 
-  const { currentSection } = useContext(ScoutBarContext);
   /**
    * Scout Key Stroke Handlers
    */
   const downPress = useScoutKey('ArrowDown', true);
   const upPress = useScoutKey('ArrowUp', true);
   const enterPress = useScoutKey('Enter', true);
-  const tabPressed = useScoutKey('Tab', true);
+  const tabPress = useScoutKey('Tab', true);
+  const backscapePress = useScoutKey('Backspace', true);
   /* ------------------------------------ = ----------------------------------- */
 
-  const isMobile = window?.matchMedia(
-    'only screen and (max-width: 768px)'
-  )?.matches;
   /**
    * Check if we are on mobile device and
    * disable fetching all
    */
   const allCellElements: Cell[] | null = Array.from(
-    !isEmpty(ref?.current) && !isMobile
-      ? (ref?.current as HTMLDivElement)?.querySelectorAll(
-          '.scoutbar-cell-item'
-        )
+    ref.current && !isMobile
+      ? ref.current.querySelectorAll('.scoutbar-cell-item')
       : []
   );
+
   const elementActive = allCellElements[cursor];
 
   useLayoutEffect(() => {
     // Get original body overflow
     const originalStyle = window.getComputedStyle(document.body).overflow;
+
     if (upPress || downPress || isMobile) {
       // Prevent scrolling on mount or deps check
       document.body.style.overflow = 'hidden';
     }
+
     return () => {
       // Re-enable scrolling when component unmounts
-      document.body.style.overflow = originalStyle;
+      if (originalStyle) {
+        document.body.style.overflow = originalStyle;
+      }
     };
-  }, [upPress, downPress, isMobile]);
+  }, []);
 
   useEffect(() => {
     if (elementActive && (upPress || downPress)) {
@@ -67,35 +72,28 @@ const useKeybaordNavigation = (
         block: 'nearest',
         inline: 'start',
       });
+      elementActive?.setAttribute('data-scoutbar-active', 'true');
     }
-    /**
-     * To be able to achieve a proper hover to arrow experience we need to
-     * disable pointer events on these elements with a class.
-     * NB: we are doing this to make sure that when we traverse the elements you dont see double hovered elements.
-     */
-    allCellElements.forEach(
-      (element, index) =>
-        index !== cursor && element.classList.add('no-pointer-events')
-    );
-  }, [upPress, downPress, cursor]);
+  }, [upPress, downPress, cursor, elementActive]);
 
   useEffect(() => {
-    if (allCellElements?.length && downPress) {
-      setCursor(prevState => {
-        if (prevState + 1 === allCellElements.length) return 0;
-        return prevState + 1;
-      });
-    }
-  }, [downPress]);
+    const allElLength = allCellElements?.length - 1;
+    if (allCellElements?.length) {
+      if (downPress) {
+        setCursor(prevState => {
+          if (prevState >= allElLength) return 0;
+          return prevState + 1;
+        });
+      }
 
-  useEffect(() => {
-    if (allCellElements?.length && upPress) {
-      setCursor(prevState => {
-        if (prevState <= 0) return allCellElements.length - 1;
-        return prevState - 1;
-      });
+      if (upPress) {
+        setCursor(prevState => {
+          if (prevState <= 0) return allElLength;
+          return prevState - 1;
+        });
+      }
     }
-  }, [upPress]);
+  }, [downPress, upPress]);
 
   useEffect(() => {
     if (elementActive && enterPress) {
@@ -104,7 +102,6 @@ const useKeybaordNavigation = (
        * so that we can trigger the click event on just the current element and
        * ignore any element that is currently focused
        */
-
       elementActive?.click();
     }
   }, [enterPress]);
@@ -115,13 +112,13 @@ const useKeybaordNavigation = (
     }
   }, [hovered]);
 
-  useEffect(() => {
-    const removeEvent = () => {
-      allCellElements.forEach(element =>
-        element.classList.remove('no-pointer-events')
-      );
-    };
+  const removeEvent = useCallback(() => {
+    allCellElements.forEach(element =>
+      element.style.removeProperty('pointer-events')
+    );
+  }, [allCellElements]);
 
+  useEffect(() => {
     ref?.current?.addEventListener('mousemove', removeEvent);
     return () => {
       ref?.current?.removeEventListener('mousemove', removeEvent);
@@ -131,11 +128,12 @@ const useKeybaordNavigation = (
   useEffect(() => {
     /**
      * Reset the cursor when there's an update on the section
-     * or when user wants to navigate with the tab key
+     * or when user wants to navigate with the tab key or backspace key
      */
-
-    setCursor(-1);
-  }, [currentSection, tabPressed]);
+    if (tabPress || backscapePress || enterPress) {
+      setCursor(-1);
+    }
+  }, [tabPress, backscapePress, enterPress]);
 
   return [cursor, setHovered, allCellElements];
 };
