@@ -8,13 +8,6 @@ import {
 } from 'react';
 import useScoutKey from 'use-scout-key';
 
-/**
- * Check if we are on mobile device and disable fetching all cells
- */
-const isMobile = window?.matchMedia(
-  'only screen and (max-width: 768px)'
-)?.matches;
-
 type Cell = HTMLAnchorElement | HTMLButtonElement;
 
 const useKeybaordNavigation = (
@@ -32,6 +25,13 @@ const useKeybaordNavigation = (
   const tabPress = useScoutKey('Tab', true);
   const backscapePress = useScoutKey('Backspace', true);
   /* ------------------------------------ = ----------------------------------- */
+
+  /**
+   * Check if we are on mobile device and disable fetching all cells
+   */
+  const isMobile = window?.matchMedia(
+    'only screen and (max-width: 768px)'
+  )?.matches;
 
   /**
    * Check if we are on mobile device and
