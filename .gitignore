@@ -60,3 +60,6 @@ jspm_packages/
 
 # next.js build output
 dist/
+
+#rollup analysis
+stats.html

@@ -7,6 +7,7 @@ import pluginTypescript from '@rollup/plugin-typescript';
 import pluginCommonjs from '@rollup/plugin-commonjs';
 import pluginNodeResolve from '@rollup/plugin-node-resolve';
 import { babel } from '@rollup/plugin-babel';
+import replace from '@rollup/plugin-replace';
 
 import { terser } from 'rollup-plugin-terser';
 import multiInput from 'rollup-plugin-multi-input';
@@ -17,6 +18,8 @@ import autoprefixer from 'autoprefixer';
 
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
+import analyze from 'rollup-plugin-analyzer';
+import visualizer from 'rollup-plugin-visualizer';
 
 /* -------------------------- Internal Dependencies ------------------------- */
 import pkg from './package.json';
@@ -66,6 +69,11 @@ const pluginsSetups = bundle => ({
         ],
       },
     }),
+    analyze({
+      hideDeps: true,
+      summaryOnly: true,
+    }),
+    visualizer(),
     babel({
       babelHelpers: 'bundled',
       configFile: path.resolve(__dirname, '.babelrc.js'),
@@ -75,6 +83,13 @@ const pluginsSetups = bundle => ({
 
     pluginCommonjs({
       extensions: ['.ts', '.tsx'],
+    }),
+
+    replace({
+      'process.env.NODE_ENV': JSON.stringify(
+        process.env.NODE_ENV === 'prod' ? 'production' : 'development'
+      ),
+      preventAssignment: true,
     }),
 
     pluginNodeResolve({
