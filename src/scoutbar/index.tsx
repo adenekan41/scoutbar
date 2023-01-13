@@ -280,7 +280,9 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
 
           return shortcuts.push({
             key: action?.keyboardShortcut,
-            action: action?.action as unknown as (e: KeyboardEvent) => void,
+            action:
+              (action?.action as unknown as (e: KeyboardEvent) => void) ||
+              (() => null),
           });
         }
       });
@@ -291,9 +293,17 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
     return shortcuts;
   }, [revisedAction, scoutbarReveal]);
 
-  bootstrapShortcutActions()?.forEach((shortcut: any) => {
-    useScoutShortcut(shortcut.key, !scoutbarReveal && shortcut.action);
-  });
+  if (bootstrapShortcutActions()?.length) {
+    bootstrapShortcutActions()?.forEach((shortcut: any) => {
+      /**
+       * If scoutbar is revealed, we don't want to run the bootstrapped shortcut action
+       */
+      useScoutShortcut(
+        shortcut.key,
+        !scoutbarReveal ? shortcut.action : () => null
+      );
+    });
+  }
 
   const handleClickOutside = () => {
     ref?.current?.classList.add('scoutbar___hide');
