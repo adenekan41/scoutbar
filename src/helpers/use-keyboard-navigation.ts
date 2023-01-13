@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useState,
 } from 'react';
 import useScoutKey from 'use-scout-key';
@@ -43,7 +44,7 @@ const useKeybaordNavigation = (
       : []
   );
 
-  const elementActive = allCellElements[cursor];
+  const elementActive = useMemo(() => allCellElements[cursor], [cursor]);
 
   useLayoutEffect(() => {
     // Get original body overflow
@@ -63,7 +64,7 @@ const useKeybaordNavigation = (
   }, []);
 
   useEffect(() => {
-    if (elementActive && (upPress || downPress)) {
+    if (elementActive) {
       /**
        * Allow elements scroll into view on keydown
        */
@@ -72,23 +73,29 @@ const useKeybaordNavigation = (
         block: 'nearest',
         inline: 'start',
       });
-      elementActive?.setAttribute('data-scoutbar-active', 'true');
+
+      allCellElements.forEach(
+        (element, index) =>
+          allCellElements[index] === elementActive &&
+          element.setAttribute('data-scoutbar-active', 'true')
+      );
     }
-  }, [upPress, downPress, cursor, elementActive]);
+  }, [elementActive]);
 
   useEffect(() => {
-    const allElLength = allCellElements?.length - 1;
+    const elementsLength = allCellElements?.length - 1;
+
     if (allCellElements?.length) {
       if (downPress) {
         setCursor(prevState => {
-          if (prevState >= allElLength) return 0;
+          if (prevState >= elementsLength) return 0;
           return prevState + 1;
         });
       }
 
       if (upPress) {
         setCursor(prevState => {
-          if (prevState <= 0) return allElLength;
+          if (prevState <= 0) return elementsLength;
           return prevState - 1;
         });
       }
@@ -104,7 +111,7 @@ const useKeybaordNavigation = (
        */
       elementActive?.click();
     }
-  }, [enterPress]);
+  }, [enterPress, elementActive]);
 
   useEffect(() => {
     if (allCellElements.length && hovered) {
@@ -114,11 +121,14 @@ const useKeybaordNavigation = (
 
   const removeEvent = useCallback(() => {
     allCellElements.forEach(element =>
-      element.style.removeProperty('pointer-events')
+      element.removeAttribute('data-scoutbar-active')
     );
   }, [allCellElements]);
 
   useEffect(() => {
+    /**
+     * Element cursor reset
+     */
     ref?.current?.addEventListener('mousemove', removeEvent);
     return () => {
       ref?.current?.removeEventListener('mousemove', removeEvent);
