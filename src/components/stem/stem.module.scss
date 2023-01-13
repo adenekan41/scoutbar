@@ -178,8 +178,7 @@
     position: relative;
     animation: slideInLeft 0.2s ease-in-out;
 
-    &:global(.no-pointer-events) {
-      background: transparent !important;
+    &:global([data-scoutbar-active='true']) {
       pointer-events: none;
       p .shortcut,
       .newPageIcon {
