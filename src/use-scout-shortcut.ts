@@ -89,7 +89,7 @@ const useScoutShortcut = (
   const handler = useCallback(
     (event: KeyboardEvent, key: string, position) => {
       const overrideKeyForOption =
-        !ROOT_KEY_MAPS.includes(event.key.toLowerCase()) &&
+        !ROOT_KEY_MAPS.includes(event.key?.toLowerCase()) &&
         ignoreStrokes((event.target as HTMLElement).tagName);
       /** Check If the key is already pressed, do nothing */
       if (event.repeat) return;
