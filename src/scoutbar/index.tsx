@@ -29,6 +29,7 @@ import {
   useOnClickOutside,
 } from 'index';
 import { classNames, print } from 'utils';
+import { createShortcutActionCallback } from 'helpers/action-shortcuts';
 
 /* ---------------------------- Styles Dependency --------------------------- */
 import '../styles/index.scss';
@@ -242,7 +243,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
   const bootstrapShortcutActions = useCallback(() => {
     const shortcuts: Array<{
       key: string[];
-      action: (e: KeyboardEvent) => void;
+      action: (keyMap: Record<string, boolean>) => void;
     }> = [];
     const recursMap = (actions: IScoutStems) => {
       [...actions]?.map(action => {
@@ -280,9 +281,7 @@ const ScoutBar: React.FC<ScoutBarProps> = ({
 
           return shortcuts.push({
             key: action?.keyboardShortcut,
-            action:
-              (action?.action as unknown as (e: KeyboardEvent) => void) ||
-              (() => null),
+            action: createShortcutActionCallback(action),
           });
         }
       });
